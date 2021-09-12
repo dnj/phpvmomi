@@ -1,0 +1,34 @@
+name: PHP-Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Validate composer.json and composer.lock
+      uses: php-actions/composer@v6
+      with:
+        command: validate
+        php_version: 8.0
+
+    - name: Install dependencies
+      uses: php-actions/composer@v6
+      with:
+        command: install --prefer-dist
+        php_version: 8.0
+
+    - name: PHPStan Static Analysis
+      uses: php-actions/phpstan@v2
+      with:
+        command: analyse
+        configuration: phpstan.neon.dist
+        path: src
+        memory_limit: 128M
+        php_version: 8.0
