@@ -16,19 +16,20 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.0'
+        tools: 'composer:v2'
         extensions: soap, openssl
 
+    - name: Check Versions
+      run: |
+          php -v
+          php -m
+          composer --version
+
     - name: Validate composer.json and composer.lock
-      uses: php-actions/composer@v6
-      with:
-        command: validate
-        php_version: 8.0
+      run: composer validate
 
     - name: Install dependencies
-      uses: php-actions/composer@v6
-      with:
-        command: install --prefer-dist
-        php_version: 8.0
+      run: composer install --prefer-dist
 
     - name: PHPStan Static Analysis
       uses: php-actions/phpstan@v2
@@ -37,4 +38,5 @@ jobs:
         configuration: phpstan.neon.dist
         path: src
         memory_limit: 128M
+        php_extensions: soap openssl
         php_version: 8.0
