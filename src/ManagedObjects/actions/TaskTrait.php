@@ -62,7 +62,6 @@ trait TaskTrait
 
 	protected $api;
 	protected $id;
-	protected $name;
 	protected $description;
 	protected $entity;
 	protected $state;

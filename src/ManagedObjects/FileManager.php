@@ -34,19 +34,19 @@ class FileManager extends ManagedEntity
 	 * @var string $name
 	 * @since vSphere API 4.0
 	 */
-	protected $name;
+	public $name;
 
 	/**
 	 * @var ManagedObjectReference<Datacenter> $datacenter
 	 * @since vSphere API 4.0
 	 */
-	protected $datacenter;
+	public $datacenter;
 
 	/**
 	 * @var string $owner;
 	 * @since vSphere API 4.0
 	 */
-	protected $owner;
+	public $owner;
 
 	public function _DeleteDatastoreFile_Task(string $name, $datacenter = null): Task
 	{
