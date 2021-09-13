@@ -1,5 +1,5 @@
 <?php
-namespace DNJ\PHPVMOMI\DataObjects;
+namespace dnj\phpvmomi\DataObjects;
 
 /**
  * DynamicData is a builtin object model data object type for manipulating data properties dynamically.

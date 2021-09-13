@@ -1,7 +1,7 @@
 <?php
-namespace DNJ\PHPVMOMI\ClassMap;
+namespace dnj\phpvmomi\ClassMap;
 
-use DNJ\PHPVMOMI\Faults;
+use dnj\phpvmomi\Faults;
 
 class FaultsClassMap
 {
@@ -10,5 +10,6 @@ class FaultsClassMap
 		'InvalidLoginFault' => Faults\InvalidLoginFault::class,
 		'MethodFault' => Faults\MethodFault::class,
 		'VimFault' => Faults\VimFault::class,
+		'ManagedObjectNotFoundFault' => Faults\ManagedObjectNotFoundFault::class,
 	];
 }

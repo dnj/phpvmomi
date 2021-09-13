@@ -1,7 +1,7 @@
 <?php
-namespace DNJ\PHPVMOMI\ManagedObjects\actions;
+namespace dnj\phpvmomi\ManagedObjects\actions;
 
-use DNJ\PHPVMOMI\API;
+use dnj\phpvmomi\API;
 
 trait NeedAPITrait {
 

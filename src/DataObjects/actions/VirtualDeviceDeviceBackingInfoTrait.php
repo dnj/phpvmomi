@@ -1,9 +1,9 @@
 <?php
-namespace DNJ\PHPVMOMI\DataObjects\actions;
+namespace dnj\phpvmomi\DataObjects\actions;
 
-use DNJ\PHPVMOMI\API;
-use DNJ\PHPVMOMI\DataObjects\DynamicData;
-use DNJ\PHPVMOMI\DataObjects\VirtualDeviceDeviceBackingInfo;
+use dnj\phpvmomi\API;
+use dnj\phpvmomi\DataObjects\DynamicData;
+use dnj\phpvmomi\DataObjects\VirtualDeviceDeviceBackingInfo;
 
 trait VirtualDeviceDeviceBackingInfoTrait
 {

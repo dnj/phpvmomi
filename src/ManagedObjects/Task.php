@@ -1,7 +1,7 @@
 <?php
-namespace DNJ\PHPVMOMI\ManagedObjects;
+namespace dnj\phpvmomi\ManagedObjects;
 
-use DNJ\PHPVMOMI\DataObjects\Event;
+use dnj\phpvmomi\DataObjects\Event;
 
 /**
  * @todo complete

@@ -1,5 +1,5 @@
 <?php
-namespace DNJ\PHPVMOMI;
+namespace dnj\phpvmomi;
 
 class Exception extends \Exception
 {

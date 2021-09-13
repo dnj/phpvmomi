@@ -1,7 +1,7 @@
 <?php
-namespace DNJ\PHPVMOMI\ClassMap;
+namespace dnj\phpvmomi\ClassMap;
 
-use DNJ\PHPVMOMI\DataObjects;
+use dnj\phpvmomi\DataObjects;
 
 class DataObjectsClassMap
 {

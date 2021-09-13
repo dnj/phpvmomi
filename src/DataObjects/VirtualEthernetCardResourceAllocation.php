@@ -1,5 +1,5 @@
 <?php
-namespace DNJ\PHPVMOMI\DataObjects;
+namespace dnj\phpvmomi\DataObjects;
 
 /**
  * This data object type describes system information including the name, type, version, and build number.

@@ -1,7 +1,7 @@
 <?php
-namespace DNJ\PHPVMOMI\ClassMap;
+namespace dnj\phpvmomi\ClassMap;
 
-use DNJ\PHPVMOMI\ManagedObjects;
+use dnj\phpvmomi\ManagedObjects;
 
 class ManagedObjectsClassMap
 {
@@ -11,7 +11,9 @@ class ManagedObjectsClassMap
 		'ExtensibleManagedObject' => ManagedObjects\ExtensibleManagedObject::class,
 		'FileManager' => ManagedObjects\FileManager::class,
 		'Folder' => ManagedObjects\Folder::class,
+		'HostSystem' => ManagedObjects\HostSystem::class,
 		'ManagedEntity' => ManagedObjects\ManagedEntity::class,
+		'Network' => ManagedObjects\Network::class,
 		'PropertyCollector' => ManagedObjects\PropertyCollector::class,
 		'PropertyFilter' => ManagedObjects\PropertyFilter::class,
 		'ServiceInstance' => ManagedObjects\ServiceInstance::class,

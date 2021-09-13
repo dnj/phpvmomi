@@ -1,10 +1,10 @@
 <?php
-namespace DNJ\PHPVMOMI\ManagedObjects;
+namespace dnj\phpvmomi\ManagedObjects;
 
 use SoapFault;
-use DNJ\PHPVMOMI\DataObjects\DynamicData;
-use DNJ\PHPVMOMI\DataObjects\Capability;
-use DNJ\PHPVMOMI\DataObjects\ServiceContent;
+use dnj\phpvmomi\DataObjects\DynamicData;
+use dnj\phpvmomi\DataObjects\Capability;
+use dnj\phpvmomi\DataObjects\ServiceContent;
 
 /**
  * @see https://vdc-download.vmware.com/vmwb-repository/dcr-public/b50dcbbf-051d-4204-a3e7-e1b618c1e384/538cf2ec-b34f-4bae-a332-3820ef9e7773/vim.ServiceInstance.html#retrieveContent

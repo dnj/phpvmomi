@@ -1,5 +1,5 @@
 <?php
-namespace DNJ\PHPVMOMI\Faults;
+namespace dnj\phpvmomi\Faults;
 
 /**
  * Thrown when a server logon fails due to a bad user name or password.

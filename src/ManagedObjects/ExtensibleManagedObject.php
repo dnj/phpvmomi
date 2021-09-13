@@ -1,8 +1,8 @@
 <?php
-namespace DNJ\PHPVMOMI\ManagedObjects;
+namespace dnj\phpvmomi\ManagedObjects;
 
-use DNJ\PHPVMOMI\DataObjects\CustomFieldDef;
-use DNJ\PHPVMOMI\DataObjects\CustomFieldValue;
+use dnj\phpvmomi\DataObjects\CustomFieldDef;
+use dnj\phpvmomi\DataObjects\CustomFieldValue;
 
 /**
  * ExtensibleManagedObject provides methods and properties that provide access to custom fields that may be associated with a managed object.

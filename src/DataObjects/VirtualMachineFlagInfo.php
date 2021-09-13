@@ -1,5 +1,5 @@
 <?php
-namespace DNJ\PHPVMOMI\DataObjects;
+namespace dnj\phpvmomi\DataObjects;
 
 /**
  * The FlagInfo data object type encapsulates the flag settings for a virtual machine. These properties are optional since the same structure is used to change the values during an edit or create operation. 

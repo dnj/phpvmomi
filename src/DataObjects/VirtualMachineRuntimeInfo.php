@@ -1,5 +1,5 @@
 <?php
-namespace DNJ\PHPVMOMI\DataObjects;
+namespace dnj\phpvmomi\DataObjects;
 
 /**
  * The RuntimeInfo data object type provides information about the execution state and history of a virtual machine.

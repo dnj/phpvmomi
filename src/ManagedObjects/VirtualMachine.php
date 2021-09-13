@@ -1,9 +1,9 @@
 <?php
-namespace DNJ\PHPVMOMI\ManagedObjects;
+namespace dnj\phpvmomi\ManagedObjects;
 
-use DNJ\PHPVMOMI\DataObjects\Event;
-use DNJ\PHPVMOMI\DataObjects\VirtualMachineRuntimeInfo;
-use DNJ\PHPVMOMI\Exceptions\BadCallMethod;
+use dnj\phpvmomi\DataObjects\Event;
+use dnj\phpvmomi\DataObjects\VirtualMachineRuntimeInfo;
+use dnj\phpvmomi\Exceptions\BadCallMethod;
 
 /**
  * @todo complete

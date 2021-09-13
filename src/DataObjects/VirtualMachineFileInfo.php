@@ -1,5 +1,5 @@
 <?php
-namespace DNJ\PHPVMOMI\DataObjects;
+namespace dnj\phpvmomi\DataObjects;
 
 /**
  * The FileInfo data object type contains the locations of virtual machine files other than the virtual disk files. The configurable parameters are all in the FileInfo object. 

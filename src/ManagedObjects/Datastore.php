@@ -1,7 +1,7 @@
 <?php
-namespace DNJ\PHPVMOMI\ManagedObjects;
+namespace dnj\phpvmomi\ManagedObjects;
 
-use DNJ\PHPVMOMI\DataObjects\Event;
+use dnj\phpvmomi\DataObjects\Event;
 
 /**
  * Represents a storage location for virtual machine files. A storage location can be a VMFS volume, a directory on Network Attached Storage, or a local file system path.
@@ -25,5 +25,38 @@ class Datastore extends ManagedEntity
 {
 	use actions\DatastoreTrait;
 
-	
+	/**
+	 * @var HostDatastoreBrowser $browser
+	 */
+	public $browser;
+
+	/**
+	 * @var DatastoreCapability $capability
+	 */
+	public $capability;
+
+	/**
+	 * @var DatastoreHostMount[] $host
+	 */
+	public $host;
+
+	/**
+	 * @var DatastoreInfo $info
+	 */
+	public $info;
+
+	/**
+	 * @var iormConfiguration $iormConfiguration
+	 */
+	public $iormConfiguration;
+
+	/**
+	 * @var DatastoreSummary $summary
+	 */
+	public $summary;
+
+	/**
+	 * @var VirtualMachine[] $vm
+	 */
+	public $vm;
 }

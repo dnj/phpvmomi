@@ -1,5 +1,5 @@
 <?php
-namespace DNJ\PHPVMOMI\DataObjects;
+namespace dnj\phpvmomi\DataObjects;
 
 /**
  * The CpuIdInfo data object type is used to represent the CPU features of a particular host or product, or to specify what the CPU feature requirements are for a particular virtual machine or guest operating system. 

@@ -1,5 +1,5 @@
 <?php
-namespace DNJ\PHPVMOMI\DataObjects;
+namespace dnj\phpvmomi\DataObjects;
 
 /**
  * Preferences for the legacy console application that affect the way it behaves during power operations on the virtual machine. 

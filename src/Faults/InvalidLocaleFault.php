@@ -1,5 +1,5 @@
 <?php
-namespace DNJ\PHPVMOMI\Faults;
+namespace dnj\phpvmomi\Faults;
 
 /**
  * Thrown when a locale name is unknown or invalid. 

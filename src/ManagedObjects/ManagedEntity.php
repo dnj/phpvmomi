@@ -1,7 +1,7 @@
 <?php
-namespace DNJ\PHPVMOMI\ManagedObjects;
+namespace dnj\phpvmomi\ManagedObjects;
 
-use DNJ\PHPVMOMI\DataObjects\Event;
+use dnj\phpvmomi\DataObjects\Event;
 
 /**
  * ManagedEntity is an abstract base type for all managed objects present in the inventory tree.
@@ -18,7 +18,7 @@ class ManagedEntity extends ExtensibleManagedObject
 	/**
 	 * @var bool $alarmActionsEnabled Whether alarm actions are enabled for this entity. True if enabled; false otherwise.
 	 */
-	protected $alarmActionsEnabled;
+	public $alarmActionsEnabled;
 
 	/**
 	 * @var Event[] $configIssue Current configuration issues that have been detected for this entity.
@@ -26,13 +26,13 @@ class ManagedEntity extends ExtensibleManagedObject
 	 * 								The entity stores these events as long as they are still current.
 	 * 								The ConfigStatus property provides an overall status based on these events. 
 	 */
-	protected $configIssue;
+	public $configIssue;
 
 	/**
 	 * @var string $name Name of this entity, unique relative to its parent.
 	 * Any / (slash), \ (backslash), character used in this name element will be escaped. Similarly, any % (percent) character used in this name element will be escaped, unless it is used to start an escape sequence. A slash is escaped as %2F or %2f. A backslash is escaped as %5C or %5c, and a percent is escaped as %25. 
 	 */
-	protected $name;
+	public $name;
 
 	/**
 	 * @param array{type: string, _:int} $_this

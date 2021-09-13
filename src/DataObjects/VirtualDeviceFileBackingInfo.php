@@ -1,5 +1,5 @@
 <?php
-namespace DNJ\PHPVMOMI\DataObjects;
+namespace dnj\phpvmomi\DataObjects;
 
 /**
  * VirtualDeviceFileBackingInfo is a data object type for information about file backing for a device in a virtual machine. 

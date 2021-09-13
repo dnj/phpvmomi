@@ -1,7 +1,7 @@
 <?php
-namespace DNJ\PHPVMOMI\Exceptions;
+namespace dnj\phpvmomi\Exceptions;
 
-use DNJ\PHPVMOMI\Exception;
+use dnj\phpvmomi\Exception;
 
 class RequiredConfigException extends Exception {
 	/**

@@ -1,8 +1,8 @@
 <?php
-namespace DNJ\PHPVMOMI\Faults;
+namespace dnj\phpvmomi\Faults;
 
-use DNJ\PHPVMOMI\Exception;
-use DNJ\PHPVMOMI\DataObjects;
+use dnj\phpvmomi\Exception;
+use dnj\phpvmomi\DataObjects;
 
 /**
  * @todo complete methods

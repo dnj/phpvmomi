@@ -1,9 +1,9 @@
 <?php
-namespace DNJ\PHPVMOMI\ManagedObjects\actions;
+namespace dnj\phpvmomi\ManagedObjects\actions;
 
-use DNJ\PHPVMOMI\API;
-use DNJ\PHPVMOMI\ManagedObjects\Task;
-use DNJ\PHPVMOMI\DataObjects\DynamicData;
+use dnj\phpvmomi\API;
+use dnj\phpvmomi\ManagedObjects\Task;
+use dnj\phpvmomi\DataObjects\DynamicData;
 
 trait TaskTrait
 {

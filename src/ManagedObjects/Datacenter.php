@@ -1,8 +1,8 @@
 <?php
-namespace DNJ\PHPVMOMI\ManagedObjects;
+namespace dnj\phpvmomi\ManagedObjects;
 
-use DNJ\PHPVMOMI\API;
-use DNJ\PHPVMOMI\DataObjects\Event;
+use dnj\phpvmomi\API;
+use dnj\phpvmomi\DataObjects\Event;
 
 /**
  * @see https://vdc-download.vmware.com/vmwb-repository/dcr-public/b50dcbbf-051d-4204-a3e7-e1b618c1e384/538cf2ec-b34f-4bae-a332-3820ef9e7773/vim.Datacenter.html

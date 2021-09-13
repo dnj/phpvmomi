@@ -1,5 +1,5 @@
 <?php
-namespace DNJ\PHPVMOMI\DataObjects;
+namespace dnj\phpvmomi\DataObjects;
 
 /**
  * An ArrayUpdateSpec data object type is a common superclass for supporting incremental updates to arrays.

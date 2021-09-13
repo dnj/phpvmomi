@@ -1,5 +1,5 @@
 <?php
-namespace DNJ\PHPVMOMI\DataObjects;
+namespace dnj\phpvmomi\DataObjects;
 
 /**
  * VirtualDevice is the base data object type for devices in a virtual machine. This type contains enough information about a virtual device to allow clients to display devices they do not recognize. For example, a client with an older version than the server to which it connects may see a device without knowing what it is. 

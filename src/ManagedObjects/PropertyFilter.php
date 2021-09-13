@@ -1,8 +1,8 @@
 <?php
-namespace DNJ\PHPVMOMI\ManagedObjects;
+namespace dnj\phpvmomi\ManagedObjects;
 
-use DNJ\PHPVMOMI\DataObjects\Event;
-use DNJ\PHPVMOMI\DataObjects\PropertyFilterSpec;
+use dnj\phpvmomi\DataObjects\Event;
+use dnj\phpvmomi\DataObjects\PropertyFilterSpec;
 
 /**
  * @todo complete methoda and properties

@@ -1,7 +1,7 @@
 <?php
-namespace DNJ\PHPVMOMI;
+namespace dnj\phpvmomi;
 
-use DNJ\PHPVMOMI\DataObjects\DynamicData;
+use dnj\phpvmomi\DataObjects\DynamicData;
 
 class SoapClient extends \SoapClient{
 

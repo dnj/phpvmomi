@@ -1,74 +1,58 @@
 <?php
-namespace DNJ\PHPVMOMI\ManagedObjects\actions;
+namespace dnj\phpvmomi\ManagedObjects\actions;
 
 use SoapVar;
-use DNJ\PHPVMOMI\API;
-use DNJ\PHPVMOMI\Exception;
-use DNJ\PHPVMOMI\DataObjects\DynamicData;
-use DNJ\PHPVMOMI\DataObjects\OptionValue;
-use DNJ\PHPVMOMI\DataObjects\VirtualMachineConfigSpec;
-use DNJ\PHPVMOMI\DataObjects\VirtualMachineFileInfo;
-use DNJ\PHPVMOMI\DataObjects\VirtualCdromAtapiBackingInfo;
-use DNJ\PHPVMOMI\DataObjects\VirtualCdromIsoBackingInfo;
-use DNJ\PHPVMOMI\DataObjects\VirtualCdrom;
-use DNJ\PHPVMOMI\DataObjects\VirtualE1000;
-use DNJ\PHPVMOMI\DataObjects\VirtualVmxnet3;
-use DNJ\PHPVMOMI\DataObjects\VirtualAHCIController;
-use DNJ\PHPVMOMI\DataObjects\VirtualEthernetCard;
-use DNJ\PHPVMOMI\DataObjects\VirtualDisk;
-use DNJ\PHPVMOMI\DataObjects\VirtualIDEController;
-use DNJ\PHPVMOMI\DataObjects\VirtualDiskFlatVer2BackingInfo;
-use DNJ\PHPVMOMI\DataObjects\VirtualDeviceConfigSpec;
-use DNJ\PHPVMOMI\DataObjects\VirtualPS2Controller;
-use DNJ\PHPVMOMI\DataObjects\VirtualDeviceDeviceBackingInfo;
-use DNJ\PHPVMOMI\DataObjects\VirtualUSBController;
-use DNJ\PHPVMOMI\DataObjects\VirtualLsiLogicController;
-use DNJ\PHPVMOMI\DataObjects\VirtualMachineVideoCard;
-use DNJ\PHPVMOMI\DataObjects\VirtualSIOController;
-use DNJ\PHPVMOMI\DataObjects\VirtualPCIController;
-use DNJ\PHPVMOMI\DataObjects\VirtualMachineBootOptions;
-use DNJ\PHPVMOMI\DataObjects\VirtualMachineDefaultPowerOpInfo;
-use DNJ\PHPVMOMI\DataObjects\VirtualMachineFlagInfo;
-use DNJ\PHPVMOMI\DataObjects\ToolsConfigInfo;
-
-use DNJ\PHPVMOMI\Exceptions\BadCallMethod;
-use DNJ\PHPVMOMI\Exceptions\RequiredConfigException;
-use DNJ\PHPVMOMI\Exceptions\UnexpectedValueConfigException;
-use DNJ\PHPVMOMI\ManagedObjects\Task;
-use DNJ\PHPVMOMI\ManagedObjects\VirtualMachine;
-use DNJ\PHPVMOMI\ManagedObjects\Datastore;
-use DNJ\PHPVMOMI\ManagedObjects\Custom\File;
+use dnj\phpvmomi\API;
+use dnj\phpvmomi\Exception;
+use dnj\phpvmomi\DataObjects\{
+	DynamicData, OptionValue, VirtualMachineConfigSpec, VirtualMachineFileInfo,
+	VirtualCdromAtapiBackingInfo, VirtualCdromIsoBackingInfo, VirtualCdrom, VirtualE1000,
+	VirtualVmxnet3, VirtualAHCIController, VirtualEthernetCard, VirtualDisk, VirtualIDEController,
+	VirtualDiskFlatVer2BackingInfo, VirtualDeviceConfigSpec, VirtualPS2Controller, VirtualDeviceDeviceBackingInfo,
+	VirtualUSBController, VirtualLsiLogicController, VirtualMachineVideoCard, VirtualSIOController, VirtualPCIController,
+	VirtualMachineBootOptions, VirtualMachineDefaultPowerOpInfo, VirtualMachineFlagInfo, ToolsConfigInfo,
+};
+use dnj\phpvmomi\Exceptions\{BadCallMethod, RequiredConfigException, UnexpectedValueConfigException};
+use dnj\phpvmomi\Faults\ManagedObjectNotFoundFault;
+use dnj\phpvmomi\ManagedObjects\{Custom\File, Task, VirtualMachine, Datastore};
 
 trait VirtualMachineTrait
 {
 	public function byID(string $id): self
 	{
-		$vm = $this->api->getPropertyCollector()->_RetrieveProperties(array(
-			'propSet' => array(
-				'type' => 'VirtualMachine',
-				'all' => true,
-				'pathSet' => array(
-					'name',
-					'runtime',
-					'config',
-					'datastore',
-					'guest',
-					'summary',
-					'effectiveRole',
-				)
-			),
-			'objectSet' => array(
-				'obj' => array(
+		try {
+			$vm = $this->api->getPropertyCollector()->_RetrieveProperties(array(
+				'propSet' => array(
 					'type' => 'VirtualMachine',
-					'_' => $id
+					'all' => true,
+					'pathSet' => array(
+						'name',
+						'runtime',
+						'config',
+						'datastore',
+						'guest',
+						'summary',
+						'effectiveRole',
+					)
 				),
-				'skip' => false
-			),
-		));
+				'objectSet' => array(
+					'obj' => array(
+						'type' => 'VirtualMachine',
+						'_' => $id
+					),
+					'skip' => false
+				),
+			));
+		} catch (\Exception $e) {
+			if (isset($e->detail->ManagedObjectNotFoundFault)) {
+				throw new ManagedObjectNotFoundFault($e->getMessage());
+			}
+			throw $e;
+		}
 		return self::fromAPI($this->api, $vm->returnval, $this);
 	}
 
-	public static function list(API $api): array
+	public function list(): array
 	{
 		$ss1 = new SoapVar(array ('name' => 'FolderTraversalSpec'), SOAP_ENC_OBJECT, null, null, 'selectSet', null);
 		$ss2 = new SoapVar(array ('name' => 'DataCenterVMTraversalSpec'), SOAP_ENC_OBJECT, null, null, 'selectSet', null);
@@ -76,7 +60,7 @@ trait VirtualMachineTrait
 		$ss = new SoapVar(array ('name' => 'FolderTraversalSpec'), SOAP_ENC_OBJECT, null, null, 'selectSet', null);
 		$b = array ('name' => 'DataCenterVMTraversalSpec', 'type' => 'Datacenter', 'path' => 'vmFolder', 'skip' => false, $ss);
 
-		$response = $api->getPropertyCollector()->_RetrieveProperties(array(
+		$response = $this->api->getPropertyCollector()->_RetrieveProperties(array(
 			'propSet' => array(
 				'type' => 'VirtualMachine',
 				'all' => false,
@@ -93,7 +77,7 @@ trait VirtualMachineTrait
 				)
 			),
 			'objectSet' => array(
-				'obj' => $api->getServiceContent()->rootFolder,
+				'obj' => $this->api->getServiceContent()->rootFolder,
 				'skip' => false,
 				'selectSet' => array(
 					new SoapVar($a, SOAP_ENC_OBJECT, 'TraversalSpec'),
@@ -107,32 +91,22 @@ trait VirtualMachineTrait
 		}
 		$virtualMachines = [];
 		foreach($response as $vm){
-			$virtualMachines[] = VirtualMachine::fromAPI($api, $vm);
+			$virtualMachines[] = VirtualMachine::fromAPI($this->api, $vm);
 		}
 		return $virtualMachines;
 	}
 
 	private static function fromAPI(API $api, DynamicData $response, VirtualMachine $vm = null): VirtualMachine
 	{
-		
 		if ($vm === null) {
 			$vm = new self($api);
 		}
 		$vm->id = $response->obj->_;
-		$runtime = self::getPropertyByName('runtime', $response->propSet);
+		$vm->runtime = self::getPropertyByName('runtime', $response->propSet);
 		$vm->name = self::getPropertyByName('name', $response->propSet);
 		$vm->config = self::getPropertyByName('config', $response->propSet);
 		$vm->summary = self::getPropertyByName('summary', $response->propSet);
 		$vm->guest = self::getPropertyByName('guest', $response->propSet);
-		$vm->runtime = self::array2Object(array(
-			'connectionState' => $runtime->connectionState,
-			'powerState' => $runtime->powerState,
-			'toolsInstallerMounted' => $runtime->toolsInstallerMounted,
-			'bootTime' => isset($runtime->bootTime) ? $runtime->bootTime : null,
-			'memoryOverhead' => $runtime->memoryOverhead ?? null,
-			'maxCpuUsage' => $runtime->maxCpuUsage,
-			'maxMemoryUsage' => $runtime->maxMemoryUsage
-		));
 		$vm->setAPI($api);
 		return $vm;
 	}

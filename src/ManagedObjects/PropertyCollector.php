@@ -1,8 +1,8 @@
 <?php
-namespace DNJ\PHPVMOMI\ManagedObjects;
+namespace dnj\phpvmomi\ManagedObjects;
 
 use SoapFault;
-use DNJ\PHPVMOMI\DataObjects\ManagedObjectReference;
+use dnj\phpvmomi\DataObjects\ManagedObjectReference;
 
 /**
  * @todo complete methoda and properties
@@ -25,7 +25,22 @@ class PropertyCollector
 				'specSet' => $specSet,
 			));
 		} catch (SoapFault $e) {
-			var_dump($e);
+			throw $e;
+		}
+	}
+
+	public function _RetrievePropertiesEx($specSet, $options = null)
+	{
+		$params = array(
+			'_this' => $this->api->getServiceContent()->propertyCollector,
+			'specSet' => $specSet,
+		);
+		if ($options) {
+			$params['options'] = $options;
+		}
+		try {
+			return $this->api->getClient()->RetrieveProperties($params);
+		} catch (SoapFault $e) {
 			throw $e;
 		}
 	}

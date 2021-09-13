@@ -1,12 +1,12 @@
 <?php
-namespace DNJ\PHPVMOMI;
+namespace dnj\phpvmomi;
 
-use DNJ\PHPVMOMI\SoapClient;
+use dnj\phpvmomi\SoapClient;
 use SoapFault;
-use DNJ\PHPVMOMI\DataObjects\ServiceContent;
-use DNJ\PHPVMOMI\ManagedObjects\ServiceInstance;
-use DNJ\PHPVMOMI\ManagedObjects\ExtensibleManagedObject;
-use DNJ\PHPVMOMI\Exceptions\MissingOptionException;
+use dnj\phpvmomi\DataObjects\ServiceContent;
+use dnj\phpvmomi\ManagedObjects\ServiceInstance;
+use dnj\phpvmomi\ManagedObjects\ExtensibleManagedObject;
+use dnj\phpvmomi\Exceptions\MissingOptionException;
 
 /**
  * @method getTask()

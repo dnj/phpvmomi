@@ -1,8 +1,8 @@
 <?php
-namespace DNJ\PHPVMOMI\DataObjects;
+namespace dnj\phpvmomi\DataObjects;
 
-use DNJ\PHPVMOMI\ManagedObjects;
-use DNJ\PHPVMOMI\ManagedObjects\ManagedObjectReference;
+use dnj\phpvmomi\ManagedObjects;
+use dnj\phpvmomi\ManagedObjects\ManagedObjectReference;
 
 /**
  * The ServiceContent data object defines properties for the ServiceInstance managed object. The ServiceInstance itself does not have directly-accessible properties because reading the properties of a managed object requires the use of a property collector, and the property collector itself is a property of the ServiceInstance. For this reason, use the method RetrieveServiceContent to retrieve the ServiceContent object.

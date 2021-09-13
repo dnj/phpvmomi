@@ -1,10 +1,10 @@
 <?php
-namespace DNJ\PHPVMOMI\ManagedObjects\Custom;
+namespace dnj\phpvmomi\ManagedObjects\Custom;
 
-use DNJ\PHPVMOMI\API;
-use DNJ\PHPVMOMI\ManagedObjects\Task;
-use DNJ\PHPVMOMI\ManagedObjects\Datastore;
-use DNJ\PHPVMOMI\ManagedObjects\actions\NeedAPITrait;
+use dnj\phpvmomi\API;
+use dnj\phpvmomi\ManagedObjects\Task;
+use dnj\phpvmomi\ManagedObjects\Datastore;
+use dnj\phpvmomi\ManagedObjects\actions\NeedAPITrait;
 
 class File
 {

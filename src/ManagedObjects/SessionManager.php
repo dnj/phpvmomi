@@ -1,10 +1,10 @@
 <?php
-namespace DNJ\PHPVMOMI\ManagedObjects;
+namespace dnj\phpvmomi\ManagedObjects;
 
 use SoapFault;
-use DNJ\PHPVMOMI\Faults\InvalidLoginFault;
-use DNJ\PHPVMOMI\Faults\InvalidLocaleFault;
-use DNJ\PHPVMOMI\DataObjects\UserSession;
+use dnj\phpvmomi\Faults\InvalidLoginFault;
+use dnj\phpvmomi\Faults\InvalidLocaleFault;
+use dnj\phpvmomi\DataObjects\UserSession;
 
 /**
  * @todo implement

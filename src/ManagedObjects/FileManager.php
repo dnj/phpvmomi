@@ -1,8 +1,8 @@
 <?php
-namespace DNJ\PHPVMOMI\ManagedObjects;
+namespace dnj\phpvmomi\ManagedObjects;
 
-use DNJ\PHPVMOMI\DataObjects\Event;
-use DNJ\PHPVMOMI\DataObjects\ManagedObjectReference;
+use dnj\phpvmomi\DataObjects\Event;
+use dnj\phpvmomi\DataObjects\ManagedObjectReference;
 
 /**
  * This managed object type provides a way to manage and manipulate files and folders on datastores. The source and the destination names are in the form of a URL or a datastore path.
