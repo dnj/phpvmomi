@@ -19,6 +19,7 @@ class ManagedObjectsClassMap
 		'ServiceInstance' => ManagedObjects\ServiceInstance::class,
 		'SessionManager' => ManagedObjects\SessionManager::class,
 		'Task' => ManagedObjects\Task::class,
+		'ViewManager' => ManagedObjects\ViewManager::class,
 		'VirtualMachine' => ManagedObjects\VirtualMachine::class,
 	];
 }

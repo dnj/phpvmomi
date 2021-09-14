@@ -41,7 +41,7 @@ class Datastore extends ManagedEntity
 	public $host;
 
 	/**
-	 * @var DatastoreInfo $info
+	 * @var \stdClass $info
 	 */
 	public $info;
 

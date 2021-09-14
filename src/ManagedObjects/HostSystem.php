@@ -9,6 +9,8 @@ use dnj\phpvmomi\DataObjects\Event;
  */
 class HostSystem extends ManagedEntity
 {
+	public const TYPE = 'HostSystem';
+
 	use actions\NeedAPITrait,
 		actions\HostSystemTrait;
 

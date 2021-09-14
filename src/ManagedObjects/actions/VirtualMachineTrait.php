@@ -5,19 +5,29 @@ use SoapVar;
 use dnj\phpvmomi\API;
 use dnj\phpvmomi\Exception;
 use dnj\phpvmomi\DataObjects\{
+	ResourceAllocationInfo,
 	DynamicData, OptionValue, VirtualMachineConfigSpec, VirtualMachineFileInfo,
 	VirtualCdromAtapiBackingInfo, VirtualCdromIsoBackingInfo, VirtualCdrom, VirtualE1000,
 	VirtualVmxnet3, VirtualAHCIController, VirtualEthernetCard, VirtualDisk, VirtualIDEController,
 	VirtualDiskFlatVer2BackingInfo, VirtualDeviceConfigSpec, VirtualPS2Controller, VirtualDeviceDeviceBackingInfo,
 	VirtualUSBController, VirtualLsiLogicController, VirtualMachineVideoCard, VirtualSIOController, VirtualPCIController,
-	VirtualMachineBootOptions, VirtualMachineDefaultPowerOpInfo, VirtualMachineFlagInfo, ToolsConfigInfo,
+	VirtualMachineBootOptions, VirtualMachineDefaultPowerOpInfo, VirtualMachineFlagInfo, ToolsConfigInfo, VirtualDeviceConnectInfo
 };
-use dnj\phpvmomi\Exceptions\{BadCallMethod, RequiredConfigException, UnexpectedValueConfigException};
+use dnj\phpvmomi\Exceptions\{
+	BadCallMethod, CreateVirtualMachineException, CreateVirtualMachineTimeoutException,
+	RequiredConfigException, UnexpectedValueConfigException
+};
 use dnj\phpvmomi\Faults\ManagedObjectNotFoundFault;
 use dnj\phpvmomi\ManagedObjects\{Custom\File, Task, VirtualMachine, Datastore};
 
 trait VirtualMachineTrait
 {
+
+	/**
+	 * @var string $id
+	 */
+	public $id;
+
 	public function byID(string $id): self
 	{
 		try {
@@ -291,6 +301,11 @@ trait VirtualMachineTrait
 		$result->memoryMB = $config['hardware']['memory'];
 		$result->memoryHotAddEnabled = $config['hardware']['memoryHotAdd'];
 		$result->cpuHotAddEnabled = $config['hardware']['cpuHotAdd'];
+		if (isset($config['hardware']['memory_limit'])) {
+			$memoryAllocation = new ResourceAllocationInfo();
+			$memoryAllocation->limit = $config['hardware']['memory_limit'];
+			$result->memoryAllocation = $memoryAllocation;
+		}
 		$result->deviceChange = array();
 		$devices = self::predefinedDevices();
 		if(isset($config['hardware']['disk'])){
@@ -334,7 +349,7 @@ trait VirtualMachineTrait
 		$devices = [];
 		$device = new VirtualIDEController();
 		$device->key = 200;
-		$device->connectable = new DynamicData;
+		$device->connectable = new VirtualDeviceConnectInfo;
 			$device->connectable->startConnected = true;
 			$device->connectable->allowGuestControl = true;
 			$device->connectable->connected = true;
@@ -345,7 +360,7 @@ trait VirtualMachineTrait
 
 		$device = new VirtualIDEController();
 		$device->key = 201;
-		$device->connectable = new DynamicData;
+		$device->connectable = new VirtualDeviceConnectInfo;
 			$device->connectable->startConnected = true;
 			$device->connectable->allowGuestControl = true;
 			$device->connectable->connected = true;
@@ -356,7 +371,7 @@ trait VirtualMachineTrait
 
 		$device = new VirtualPCIController();
 		$device->key = 100;
-		$device->connectable = new DynamicData;
+		$device->connectable = new VirtualDeviceConnectInfo;
 			$device->connectable->startConnected = true;
 			$device->connectable->allowGuestControl = true;
 			$device->connectable->connected = true;
@@ -367,7 +382,7 @@ trait VirtualMachineTrait
 
 		$device = new VirtualPS2Controller();
 		$device->key = 300;
-		$device->connectable = new DynamicData;
+		$device->connectable = new VirtualDeviceConnectInfo;
 			$device->connectable->startConnected = true;
 			$device->connectable->allowGuestControl = true;
 			$device->connectable->connected = true;
@@ -378,7 +393,7 @@ trait VirtualMachineTrait
 
 		$device = new VirtualSIOController();
 		$device->key = 400;
-		$device->connectable = new DynamicData;
+		$device->connectable = new VirtualDeviceConnectInfo;
 			$device->connectable->startConnected = true;
 			$device->connectable->allowGuestControl = true;
 			$device->connectable->connected = true;
@@ -454,7 +469,7 @@ trait VirtualMachineTrait
 			$device->backing->network = new SoapVar('HaNetwork-VM Network', SOAP_ENC_OBJECT, 'Network');
 
 		$device->backing = new SoapVar($device->backing, SOAP_ENC_OBJECT, 'VirtualEthernetCardNetworkBackingInfo');
-		$device->connectable = new DynamicData;
+		$device->connectable = new VirtualDeviceConnectInfo;
 			$device->connectable->startConnected = true;
 			$device->connectable->allowGuestControl = true;
 			$device->connectable->connected = $config['hardware']['net']['connected'];
@@ -479,7 +494,7 @@ trait VirtualMachineTrait
 
 			$device->backing = new SoapVar($device->backing, SOAP_ENC_OBJECT, 'VirtualCdromAtapiBackingInfo');
 		}
-		$device->connectable = new DynamicData;
+		$device->connectable = new VirtualDeviceConnectInfo;
 			$device->connectable->startConnected = true;
 			$device->connectable->allowGuestControl = true;
 			$device->connectable->connected = $config['hardware']['net']['connected'];
@@ -595,6 +610,24 @@ trait VirtualMachineTrait
 		return (isset($this->runtime->powerState) and $this->runtime->powerState == 'suspend');
 	}
 
+	public function createAndFind(array $config, int $timeout = 0): self
+	{
+		$task = $this->create($config);
+		if (!$task->waitFor($timeout)) {
+			throw new CreateVirtualMachineTimeoutException($timeout);
+		}
+		if ($task->state != Task::success) {
+			throw new CreateVirtualMachineException($config);
+		}
+		$list = $this->list();
+		foreach($list as $virtualMachine){
+			if($virtualMachine->name == $config['name']){
+				return $virtualMachine;
+			}
+		}
+		throw new CreateVirtualMachineException($config);
+	}
+
 	public function create(array $config)
 	{
 		if (!isset($config['name'])) {
@@ -667,18 +700,14 @@ trait VirtualMachineTrait
 			$config['hardware']['cdrom'] = self::checkCDrom($config['hardware']['cdrom']);
 		}
 		$config['boot'] = self::checkBootOptions(isset($config['boot']) ? $config['boot'] : null);
-		$response = $this->api->getClient()->CreateVM_Task(array(
-			'_this' => array(
-				'type' => 'Folder',
-				'_' => 'ha-folder-vm'
-			),
-			'config' => self::createConfig($config),
-			'pool' => array(
+
+		return $this->api->getFolder()->_CreateVM_Task(
+			self::createConfig($config),
+			array(
 				'_' => 'ha-root-pool',
-				'type' => 'ResourcePool'
+				'type' => 'ResourcePool',
 			)
-		));
-		return $this->api->getTask()->byID($response->returnval->_);
+		);
 	}
 
 	private function lastVersion(): string

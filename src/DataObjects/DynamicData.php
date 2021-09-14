@@ -1,6 +1,8 @@
 <?php
 namespace dnj\phpvmomi\DataObjects;
 
+use stdClass;
+
 /**
  * DynamicData is a builtin object model data object type for manipulating data properties dynamically.
  * The primary usage is as a base class for types that may be extended with subtypes in the future, where new properties should be sent to old clients as a set of dynamic properties. 
@@ -9,7 +11,7 @@ namespace dnj\phpvmomi\DataObjects;
  *
  * @see https://vdc-download.vmware.com/vmwb-repository/dcr-public/b50dcbbf-051d-4204-a3e7-e1b618c1e384/538cf2ec-b34f-4bae-a332-3820ef9e7773/vmodl.DynamicData.html
  */
-class DynamicData
+class DynamicData extends stdClass
 {
 	public function getSoapData()
 	{

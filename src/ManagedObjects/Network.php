@@ -9,6 +9,8 @@ use dnj\phpvmomi\DataObjects\Event;
  */
 class Network extends ManagedEntity
 {
+	public const TYPE = 'Network';
+
 	use actions\NetworkTrait;
 
 	public $host;

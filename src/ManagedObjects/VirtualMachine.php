@@ -3,6 +3,7 @@ namespace dnj\phpvmomi\ManagedObjects;
 
 use dnj\phpvmomi\DataObjects\Event;
 use dnj\phpvmomi\DataObjects\VirtualMachineRuntimeInfo;
+use dnj\phpvmomi\DataObjects\VirtualMachineConfigSpec;
 use dnj\phpvmomi\Exceptions\BadCallMethod;
 
 /**
@@ -126,6 +127,21 @@ class VirtualMachine extends ManagedEntity
 				'_' => $this->id,
 				'type' => self::TYPE,
 			),
+		));
+		return $this->api->getTask()->byID($response->returnval->_);
+	}
+
+	public function _ReconfigVM_Task(VirtualMachineConfigSpec $spec): Task
+	{
+		if (empty($this->id)) {
+			throw new BadCallMethod('Can not call method: ' . __CLASS__ . '@' . __FUNCTION__ . '! ID is not setted!');
+		}
+		$response = $this->api->getClient()->ReconfigVM_Task(array(
+			'_this' => array(
+				'_' => $this->id,
+				'type' => self::TYPE,
+			),
+			'spec' => $spec,
 		));
 		return $this->api->getTask()->byID($response->returnval->_);
 	}

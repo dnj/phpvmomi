@@ -45,7 +45,6 @@ class ServiceInstance
 				)
 			))->returnval;
 		} catch (SoapFault $e) {
-			var_dump($e);
 			throw $e;
 		}
 	}

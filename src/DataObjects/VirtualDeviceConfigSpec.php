@@ -8,13 +8,22 @@ namespace dnj\phpvmomi\DataObjects;
 class VirtualDeviceConfigSpec extends DynamicData
 {
 
-	/** @var string|null The type of operation being performed on the specified virtual device. Valid values are: add, edit, remove */
-	public $operation;
-
-	/** @var string|null  The type of operation being performed on the backing of a virtual device. Valid values are: create, destroy, replace */
-	public $fileOperation;
+	/**
+	 * @var DynamicData $backing
+	 */
+	public $backing;
 
 	/** @var VirtualDevice $device */
 	public $device;
 
+	/** @var string|null  The type of operation being performed on the backing of a virtual device. Valid values are: create, destroy, replace */
+	public $fileOperation;
+
+	/** @var string|null The type of operation being performed on the specified virtual device. Valid values are: add, edit, remove */
+	public $operation;
+
+	/**
+	 * @var DynamicData $profile
+	 */
+	public $profile;
 }

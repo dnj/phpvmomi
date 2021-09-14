@@ -4,10 +4,13 @@ namespace dnj\phpvmomi\ManagedObjects\actions;
 use SoapVar;
 use dnj\phpvmomi\API;
 use dnj\phpvmomi\ManagedObjects\Datastore;
+use dnj\phpvmomi\ManagedObjects\Custom\File;
 use dnj\phpvmomi\DataObjects\DynamicData;
 
 trait DatastoreTrait
 {
+	public $vmfs;
+
 	public function list()
 	{
 		$response = $this->api->getPropertyCollector()->_RetrievePropertiesEx(array(
@@ -47,21 +50,40 @@ trait DatastoreTrait
 		return $datastores;
 	}
 
+	public function file(string $path): File
+	{
+		return new File($this->api, $this, $path);
+	}
+
+	public function __toString(){
+		return $this->vmfs->uuid;
+	}
+
 	public static function fromAPI(API $api, DynamicData $response, ?Datastore $datastore = null):Datastore{
 
 		if ($datastore == null) {
 			$datastore = new self($api);
 		}
 
+		$info = self::getPropertyByName('info', $response->propSet);
+
 		$datastore->id = $response->obj->_;
 		$datastore->browser = self::getPropertyByName('browser', $response->propSet);
 		$datastore->capability = self::getPropertyByName('capability', $response->propSet);
 		$datastore->host = self::getPropertyByName('host', $response->propSet);
-		$datastore->info = self::getPropertyByName('info', $response->propSet);
+		$datastore->info = $info;
 		$datastore->iormConfiguration = self::getPropertyByName('iormConfiguration', $response->propSet);
 		$datastore->summary = self::getPropertyByName('summary', $response->propSet);
 		$datastore->configStatus = self::getPropertyByName('configStatus', $response->propSet);
 		$datastore->vm = self::getPropertyByName('vm', $response->propSet);
+		$datastore->vmfs = self::array2Object(array(
+			'type' => $info->vmfs->type,
+			'name' => $info->vmfs->name,
+			'capacity' => $info->vmfs->capacity,
+			'version' => $info->vmfs->version,
+			'uuid' => $info->vmfs->uuid,
+			'ssd' => $info->vmfs->ssd,
+		));
 		
 		$datastore->setAPI($api);
 		return $datastore;

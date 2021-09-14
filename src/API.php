@@ -9,12 +9,13 @@ use dnj\phpvmomi\ManagedObjects\ExtensibleManagedObject;
 use dnj\phpvmomi\Exceptions\MissingOptionException;
 
 /**
- * @method getTask()
- * @method getSessionManager()
- * @method getServiceInstance()
- * @method getPropertyCollector()
- * @method getVirtualMachine()
- * @method getFileManager()
+ * @method \dnj\phpvmomi\ManagedObjects\Task getTask()
+ * @method \dnj\phpvmomi\ManagedObjects\SessionManager getSessionManager()
+ * @method \dnj\phpvmomi\ManagedObjects\ServiceInstance getServiceInstance()
+ * @method \dnj\phpvmomi\ManagedObjects\PropertyCollecto getPropertyCollector()
+ * @method \dnj\phpvmomi\ManagedObjects\VirtualMachine getVirtualMachine()
+ * @method \dnj\phpvmomi\ManagedObjects\FileManager getFileManager()
+ * @method \dnj\phpvmomi\ManagedObjects\DataStore getDatastore()
  */
 class API
 {
@@ -147,7 +148,6 @@ class API
 		try {
 			return $this->serviceContent = $this->getServiceInstance()->_RetrieveServiceContent();
 		} catch (SoapFault $e) {
-			var_dump($e);
 			throw $e;
 		}
 	}
