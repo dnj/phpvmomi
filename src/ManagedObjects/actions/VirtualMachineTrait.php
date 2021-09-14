@@ -550,11 +550,10 @@ trait VirtualMachineTrait
 			throw new BadCallMethod('Can not call method: ' . __CLASS__ . '@' . __FUNCTION__ . '! ID is not setted!');
 		}
 
-		$response = $this->_Destroy_Task(array(
+		return $this->_Destroy_Task(array(
 			'type' => 'VirtualMachine',
 			'_' => $this->id,
 		));
-		return $this->api->getTask()->byID($response->returnval->_);
 	}
 
 	public function reboot(): Task

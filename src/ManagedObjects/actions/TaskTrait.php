@@ -7,6 +7,7 @@ use dnj\phpvmomi\DataObjects\DynamicData;
 
 trait TaskTrait
 {
+
 	public function byID(string $id)
 	{
 		$response = $this->api->getPropertyCollector()->_RetrieveProperties(array(
@@ -24,6 +25,22 @@ trait TaskTrait
 			),
 		));
 		return self::fromAPI($this->api, $response->returnval, $this);
+	}
+
+	public function waitFor(int $timeout = 0): bool
+	{
+		if($this->state != self::running){
+			return true;
+		}
+		$startTime = time();
+		while($timeout == 0 or time() - $startTime < $timeout){
+			$this->byID($this->id);
+			if($this->state != self::running){
+				return true;
+			}
+			usleep(300000);
+		}
+		return false;
 	}
 
 	private static function fromAPI(API $api, DynamicData $response, Task $task = null): self
@@ -60,17 +77,16 @@ trait TaskTrait
 		return null;
 	}
 
-	protected $api;
-	protected $id;
-	protected $description;
-	protected $entity;
-	protected $state;
-	protected $cancelled;
-	protected $cancelable;
-	protected $error;
-	protected $queueTime;
-	protected $startTime;
-	protected $completeTime;
-	protected $result;
+	public $id;
+	public $description;
+	public $entity;
+	public $state;
+	public $cancelled;
+	public $cancelable;
+	public $error;
+	public $queueTime;
+	public $startTime;
+	public $completeTime;
+	public $result;
 	
 }

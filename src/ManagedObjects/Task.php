@@ -14,4 +14,9 @@ class Task extends ManagedEntity
 
 	public const TYPE = 'Task';
 
+
+	const error = 'error';
+	const success = 'success';
+	const running = 'running';
+
 }
