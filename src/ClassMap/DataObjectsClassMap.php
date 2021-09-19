@@ -71,5 +71,9 @@ class DataObjectsClassMap
 		'VirtualUSBController' => DataObjects\VirtualUSBController::class,
 		'VirtualVmxnet' => DataObjects\VirtualVmxnet::class,
 		'VirtualVmxnet3' => DataObjects\VirtualVmxnet3::class,
+		'VirtualMachineBootOptionsBootableCdromDevice' => DataObjects\VirtualMachineBootOptionsBootableCdromDevice::class,
+		'VirtualMachineBootOptionsBootableDiskDevice' => DataObjects\VirtualMachineBootOptionsBootableDiskDevice::class,
+		'VirtualMachineBootOptionsBootableEthernetDevice' => DataObjects\VirtualMachineBootOptionsBootableEthernetDevice::class,
+		'VirtualMachineBootOptionsBootableFloppyDevice' => DataObjects\VirtualMachineBootOptionsBootableFloppyDevice::class,
 	];
 }

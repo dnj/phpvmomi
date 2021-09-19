@@ -2,16 +2,19 @@
 namespace dnj\phpvmomi\ManagedObjects\actions;
 
 use SoapVar;
+use SplFileObject;
 use dnj\phpvmomi\API;
 use dnj\phpvmomi\Exception;
 use dnj\phpvmomi\DataObjects\{
-	ResourceAllocationInfo,
+	ResourceAllocationInfo, ManagedObjectReference,
 	DynamicData, OptionValue, VirtualMachineConfigSpec, VirtualMachineFileInfo,
 	VirtualCdromAtapiBackingInfo, VirtualCdromIsoBackingInfo, VirtualCdrom, VirtualE1000,
 	VirtualVmxnet3, VirtualAHCIController, VirtualEthernetCard, VirtualDisk, VirtualIDEController,
 	VirtualDiskFlatVer2BackingInfo, VirtualDeviceConfigSpec, VirtualPS2Controller, VirtualDeviceDeviceBackingInfo,
 	VirtualUSBController, VirtualLsiLogicController, VirtualMachineVideoCard, VirtualSIOController, VirtualPCIController,
-	VirtualMachineBootOptions, VirtualMachineDefaultPowerOpInfo, VirtualMachineFlagInfo, ToolsConfigInfo, VirtualDeviceConnectInfo
+	VirtualMachineBootOptions, VirtualMachineDefaultPowerOpInfo, VirtualMachineFlagInfo, ToolsConfigInfo, VirtualDeviceConnectInfo,
+	VirtualMachineBootOptionsBootableCdromDevice, VirtualMachineBootOptionsBootableDiskDevice,
+	VirtualMachineBootOptionsBootableEthernetDevice, VirtualMachineBootOptionsBootableFloppyDevice
 };
 use dnj\phpvmomi\Exceptions\{
 	BadCallMethod, CreateVirtualMachineException, CreateVirtualMachineTimeoutException,
@@ -104,6 +107,367 @@ trait VirtualMachineTrait
 			$virtualMachines[] = VirtualMachine::fromAPI($this->api, $vm);
 		}
 		return $virtualMachines;
+	}
+
+	/**
+	 * Change order of booting in machine's BIOS.
+	 * 
+	 * @param string[] $devices value can be a series of ["cdrom", "disk", "ethernet", "floppy"]
+	 * @throws Exception in case of the passed devices is not valid
+	 * @return void
+	 */
+	public function setBootOrder(array $devices): void
+	{
+		$order = [];
+		foreach ($devices as $device) {
+			$device = strtolower($device);
+			if ($device == "floppy" and !$this->hasFloppyDisk()) {
+				continue;
+			}
+			if ($device == "cdrom" and !$this->hasCDRomDisk()) {
+				continue;
+			}
+			switch ($device) {
+				case("cdrom"):
+					$order[] = new VirtualMachineBootOptionsBootableCdromDevice();
+					break;
+				case("disk"):
+					$device =  new VirtualMachineBootOptionsBootableDiskDevice();
+					$device->deviceKey = $this->findFirstDisk()->key;
+					$order[] = $device;
+					break;
+				case("ethernet"):
+					$device =  new VirtualMachineBootOptionsBootableEthernetDevice();
+					$device->deviceKey = $this->findFirstEthernet()->key;
+					$order[] = $device;
+					break;
+				case("floppy"):
+					$order[] = new VirtualMachineBootOptionsBootableFloppyDevice();
+					break;
+				default:
+					throw new Exception("unsupported device: " . $device);
+			}
+		}
+		$bootOptions = new VirtualMachineBootOptions();
+		$bootOptions->bootOrder = $order;
+		$spec = new VirtualMachineConfigSpec();
+		$spec->bootOptions = $bootOptions;
+		$task = $this->_ReconfigVM_Task($spec);
+		if (!$task->waitFor(30)) {
+			throw new Exception("timeout waiting for task");
+		}
+		if ($task->error) {
+			throw new Exception($task->error->localizedMessage);
+		}
+	}
+
+	/**
+	 * Mount transfered ISO in the first cdrom.
+	 *
+	 * @param string|string[] $file string within this format: "[datastore name] path/to/file"
+	 * @throws Exception if given file doesn't match to the format
+	 * @return void
+	 */
+	public function mountISO($files): void {
+		if (!is_array($files)) {
+			$files = [$files];
+		}
+		$x = 0;
+		$changes = [];
+		foreach ($files as $file) {
+			if (!preg_match("/^\[([^\]]+)\]\s+(.+)/", $file, $matches)) {
+				throw new Exception("wrong format: " . $file);
+			}
+			$datastores = $this->api->getDatastore()->list();
+			$datastore = null;
+			foreach ($datastores as $item) {
+				if ($item->name == $matches[1]) {
+					$datastore = $item;
+					break;
+				}
+			}
+			if (!$datastore) {
+				throw new Exception("cannot find the datastore");
+			}
+			$cdrom = $this->findCdrom(true, $x++);
+			$cdrom->backing = new VirtualCdromIsoBackingInfo();
+			$cdrom->backing->datastore = new ManagedObjectReference("Datastore", $datastore->id);
+			$cdrom->backing->fileName = $file;
+			$cdrom->connectable->allowGuestControl = true;
+			$cdrom->connectable->connected = true;
+			$cdrom->connectable->startConnected = true;
+			$change = new VirtualDeviceConfigSpec();
+			$change->operation = "edit";
+			$change->device = $cdrom;
+			$changes[] = $change;
+		}
+		
+		$spec = new VirtualMachineConfigSpec();
+		$spec->deviceChange = $changes;
+
+		$task = $this->_ReconfigVM_Task($spec);
+		if (!$task->waitFor(30)) {
+			throw new Exception("timeout waiting for task");
+		}
+		if ($task->error) {
+			throw new Exception($task->error->localizedMessage);
+		}
+	}
+
+	/**
+	 * Unmount any ISO in cdroms
+	 * 
+	 * @return void
+	 */
+	public function unmountISO(): void {
+		$cdroms = [];
+		foreach ($this->config->hardware->device as $device) {
+			if ($device instanceof VirtualCdrom) {
+				$cdroms[] = $device;
+			}
+		}
+		if (!$cdroms) {
+			return;
+		}
+		$changes = [];
+		foreach ($cdroms as $cdrom) {
+			$cdrom->connectable->allowGuestControl = false;
+			$cdrom->connectable->connected = false;
+			$cdrom->connectable->startConnected = false;
+			unset($cdrom->connectable->status);
+			$change = new VirtualDeviceConfigSpec();
+			$change->operation = "edit";
+			$change->device = $cdrom;
+			$changes[] = $change;
+		}
+
+		$spec = new VirtualMachineConfigSpec();
+		$spec->deviceChange = $changes;
+		$task = $this->_ReconfigVM_Task($spec);
+		if (!$task->waitFor(30)) {
+			throw new Exception("timeout waiting for task");
+		}
+		if ($task->error) {
+			throw new Exception($task->error->localizedMessage);
+		}
+	}
+
+	/**
+	 * Transfer the file to the host
+	 * 
+	 * @param string $file local file
+	 * @throws Exception if cannot find any datastore
+	 * @return string path of ISO on remote host which will use in mountISO() and removeISO() methods.
+	 */
+	public function transferISO(SplFileObject $file, string $isoDir = 'iso'): string
+	{
+		
+		$datastores = $this->api->getDatastore()->list();
+		if ($this->summary->runtime->host) {
+			$host = $this->api->getHostSystem()->byID($this->summary->runtime->host->_);
+			$sameHost = array_column($host->datastore->ManagedObjectReference, '_');
+			$datastores = array_values(array_filter(
+				$datastores,
+				fn($item) => in_array($item->id, $sameHost)
+			));
+		}
+		if (!$datastores) {
+			throw new Exception("cannot find any datastore");
+		}
+
+		$isoDatastore = null;
+		foreach ($datastores as $datastore) {
+			$items = $datastore->browse("/");
+			foreach ($items as $item) {
+				if ($item->path == $isoDir) {
+					$isoDatastore = $datastore;
+					break 2;
+				}
+			}
+		}
+
+		if ($isoDatastore and $isoDatastore->info->freeSpace <= $file->getSize()) {
+			$isoDatastore = null; // datastore does not have enough free space
+		}
+
+		$md5 = md5_file($file->getRealPath());
+		if ($isoDatastore) {
+			$items = $isoDatastore->browse('/' .ltrim($isoDir, '/'));
+			foreach ($items as $item) {
+				if ($item->path == ($md5 . ".iso")) {
+					return $isoDatastore->file($isoDir . "/" . $md5 . ".iso")->__toString();
+				}
+			}
+		} else {
+			foreach ($datastores as $datastore) {
+				if (!$isoDatastore or $datastore->info->freeSpace > $isoDatastore->info->freeSpace) {
+					$isoDatastore = $datastore;
+				}
+			}
+			if ($isoDatastore and $isoDatastore->info->freeSpace <= $file->getSize()) {
+				throw new Exception(
+					"can not find datastore with enough free space, datastore " . $isoDatastore->__toString() . " does not have enough space! ({$file->getSize()} needed, currently {$isoDatastore->info->freeSpace} is free)"
+				);
+			}
+			$isoDatastore->mkdir($isoDir);
+		}
+		$remote = $isoDatastore->file($isoDir . '/' . $md5 . '.iso');
+		$res = $remote->upload($file);
+		return $remote->__toString();
+	}
+
+	/**
+	 * Remove transfered ISO
+	 * 
+	 * @param string $file file path which returned by transferISO() method
+	 * @throws Exception if given file wasn't in correct format
+	 * @throws Exception if cannot find any datastore
+	 * @throws Exception if cannot find the datastore
+	 * @return void
+	 */
+	public function removeISO(string $file): void {
+		if (!preg_match("/^\[([^\]]+)\]\s+(.+)/", $file, $matches)) {
+			throw new Exception("wrong format");
+		}
+		dd($matches);
+
+		$datastores = $this->api->getDatastore()->list();
+		if (!$datastores) {
+			throw new Exception("cannot find any datastore");
+		}
+		if ($this->summary->runtime->host) {
+			$host = $this->api->getHostSystem()->byID($this->summary->runtime->host->_);
+			$sameHost = array_column($host->datastore->ManagedObjectReference, '_');
+			$datastores = array_values(array_filter($datastores, function ($item) use ($sameHost) {
+				return in_array($item->id, $sameHost);
+			}));
+		}
+		$datastore = null;
+		foreach ($datastores as $item) {
+			if ($item->name == $matches[1]) {
+				$datastore = $item;
+				break;
+			}
+		}
+		if (!$datastore) {
+			throw new Exception("cannot find the datastore: {$matches[1]}");
+		}
+		$file = $datastore->file($matches[2]);
+		$file->delete();
+	}
+
+	/**
+	 * Find the cdrom device or create new one.
+	 * 
+	 * @param bool $create default is false
+	 * @param int $index index of device, default is 0 so it will return first virtual cdrom
+	 * @throws Exception if cannot find no cdrom and cannot create one it will throw an Exception
+	 * @return VirtualCdrom
+	 */
+	public function findCdrom(bool $create = false, int $index = 0): VirtualCdrom {
+		if (empty($this->id)) {
+			throw new BadCallMethod('Can not call method: ' . __CLASS__ . '@' . __FUNCTION__ . '! ID is not setted!');
+		}
+		$x = 0;
+		foreach ($this->config->hardware->device as $device) {
+			if ($device instanceof VirtualCdrom) {
+				if ($x === $index) {
+					return $device;
+				}
+				$x++;
+			}
+		}
+		if (!$create) {
+			throw new Exception("Cannot find cdrom");
+		}
+
+		$cdrom = new VirtualCdrom();
+		$cdrom->key = 10001;
+		$cdrom->backing = new VirtualCdromAtapiBackingInfo();
+		$cdrom->backing->useAutoDetect = true;
+		$cdrom->connectable = new VirtualDeviceConnectInfo();
+		$cdrom->connectable->allowGuestControl = true;
+		$cdrom->connectable->connected = true;
+		$cdrom->connectable->startConnected = true;
+		$cdrom->controllerKey = 200;
+		$cdrom->unitNumber = 0;
+
+		$deviceChange = new VirtualDeviceConfigSpec();
+		$deviceChange->operation = "add";
+		$deviceChange->device = $cdrom;
+
+		$spec = new VirtualMachineConfigSpec();
+		$spec->deviceChange = [$deviceChange];
+		$task = $this->_ReconfigVM_Task($spec);
+		if (!$task->waitFor(30)) {
+			throw new Exception("timeout waiting for task");
+		}
+		$this->byID($this->id);
+		return $this->findCdrom(false, $index);
+	}
+
+	/**
+	 * Find the first virtual disk
+	 * 
+	 * @throws Exception if cannot find no disk
+	 * @return VirtualDisk
+	 */
+	private function findFirstDisk(): ?VirtualDisk {
+		if (empty($this->id)) {
+			throw new BadCallMethod('Can not call method: ' . __CLASS__ . '@' . __FUNCTION__ . '! ID is not setted!');
+		}
+		foreach ($this->config->hardware->device as $device) {
+			if ($device instanceof VirtualDisk) {
+				return $device;
+			}
+		}
+		return null;
+	}
+
+
+	/**
+	 * Find the first network card
+	 * 
+	 * @throws Exception if cannot find no network card
+	 * @return VirtualEthernetCard|null
+	 */
+	public function findFirstEthernet(): ?VirtualEthernetCard
+	{
+		if (empty($this->id)) {
+			throw new BadCallMethod('Can not call method: ' . __CLASS__ . '@' . __FUNCTION__ . '! ID is not setted!');
+		}
+		foreach ($this->config->hardware->device as $device) {
+			if ($device instanceof VirtualEthernetCard) {
+				return $device;
+			}
+		}
+		return null;
+	}
+
+	public function hasFloppyDisk(): bool
+	{
+		if (empty($this->id)) {
+			throw new BadCallMethod('Can not call method: ' . __CLASS__ . '@' . __FUNCTION__ . '! ID is not setted!');
+		}
+		foreach ($this->config->hardware->device as $device) {
+			if ($device instanceof VirtualFloppy) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public function hasCDRomDisk(): bool
+	{
+		if (empty($this->id)) {
+			throw new BadCallMethod('Can not call method: ' . __CLASS__ . '@' . __FUNCTION__ . '! ID is not setted!');
+		}
+		foreach ($this->config->hardware->device as $device) {
+			if ($device instanceof VirtualCdrom) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static function fromAPI(API $api, DynamicData $response, VirtualMachine $vm = null): VirtualMachine
@@ -617,7 +981,7 @@ trait VirtualMachineTrait
 			throw new CreateVirtualMachineTimeoutException($timeout);
 		}
 		if ($task->state != Task::success) {
-			throw new CreateVirtualMachineException($config);
+			throw new CreateVirtualMachineException($task->error->localizedMessage, $config);
 		}
 		$list = $this->list();
 		foreach($list as $virtualMachine){
@@ -625,7 +989,7 @@ trait VirtualMachineTrait
 				return $virtualMachine;
 			}
 		}
-		throw new CreateVirtualMachineException($config);
+		throw new CreateVirtualMachineException($task->error->localizedMessage, $config);
 	}
 
 	public function create(array $config)

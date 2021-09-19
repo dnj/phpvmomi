@@ -16,6 +16,7 @@ use dnj\phpvmomi\Exceptions\MissingOptionException;
  * @method \dnj\phpvmomi\ManagedObjects\VirtualMachine getVirtualMachine()
  * @method \dnj\phpvmomi\ManagedObjects\FileManager getFileManager()
  * @method \dnj\phpvmomi\ManagedObjects\DataStore getDatastore()
+ * @method \dnj\phpvmomi\ManagedObjects\Network getNetwork()
  */
 class API
 {

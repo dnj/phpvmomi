@@ -3,7 +3,9 @@ namespace dnj\phpvmomi\ManagedObjects\actions;
 
 use SoapVar;
 use dnj\phpvmomi\API;
+use dnj\phpvmomi\Exception;
 use dnj\phpvmomi\ManagedObjects\Datastore;
+use dnj\phpvmomi\ManagedObjects\Datacenter;
 use dnj\phpvmomi\ManagedObjects\Custom\File;
 use dnj\phpvmomi\DataObjects\DynamicData;
 
@@ -55,6 +57,82 @@ trait DatastoreTrait
 		return new File($this->api, $this, $path);
 	}
 
+	public function getDatacenter(): Datacenter
+	{
+		$result = $this->api->getPropertyCollector()->_RetrieveProperties(array(
+			'propSet' => array(
+				'type' => 'Datacenter',
+				'all' => true
+			),
+			'objectSet' => array(
+				'obj' => array(
+					'type' => 'Datastore',
+					'_' => $this->id
+				),
+				'skip' => false,
+				'selectSet' => array(
+					new SoapVar(array(
+						'name' => 'FolderTraversalSpec',
+						'type' => 'ManagedEntity',
+						'path' => 'parent',
+						'skip' => false,
+						new SoapVar(array(
+							"name" => "FolderTraversalSpec"
+						), SOAP_ENC_OBJECT, null, null, 'selectSet'),
+						new SoapVar(array("name" => "DataCenterVMTraversalSpec"), SOAP_ENC_OBJECT, null, null, 'selectSet')
+					), SOAP_ENC_OBJECT, 'TraversalSpec'),
+					new soapvar(array(
+						'name' => 'DataCenterVMTraversalSpec',
+						'type' => 'Datacenter',
+						'path' => 'parent',
+						'skip' => false,
+						'selectSet' => (object)array("name" => "FolderTraversalSpec")
+					), SOAP_ENC_OBJECT, 'TraversalSpec'),
+				),
+			),
+		));
+		return Datacenter::fromPropertyCollector($this->api, $result->returnval);
+	}
+
+	public function browse(string $path)
+	{
+		$task = $this->api->getClient()->SearchDatastore_Task(array(
+			'_this' => $this->browser,
+			'datastorePath' => "[$this->name] $path",
+			'searchSpec' => array(
+				'details' => array(
+					'fileType' => true,
+					'fileSize' => true,
+					'modification' => true,
+					'fileOwner' => true,
+				),
+				'sortFoldersFirst' => true,
+			)
+		))->returnval;
+		$task = $this->api->getTask()->byID($task->_);
+		if (!$task->waitFor(60)) {
+			throw new Exception("timeout task");
+		}
+		if ($task->error) {
+			throw new Exception($task->error->localizedMessage);
+		}
+		if (!isset($task->result->file)) {
+			return [];
+		}
+		if (!is_array($task->result->file)) {
+			return array($task->result->file);
+		}
+		return $task->result->file;
+	}
+
+	public function mkdir(string $path): void
+	{
+		$this->api->getClient()->MakeDirectory(array(
+			'_this' => $this->api->getServiceContent()->fileManager,
+			'name' => "[$this->name] $path",
+		));
+	}
+
 	public function __toString(){
 		return $this->vmfs->uuid;
 	}
@@ -72,6 +150,7 @@ trait DatastoreTrait
 		$datastore->capability = self::getPropertyByName('capability', $response->propSet);
 		$datastore->host = self::getPropertyByName('host', $response->propSet);
 		$datastore->info = $info;
+		$datastore->name = $info->name;
 		$datastore->iormConfiguration = self::getPropertyByName('iormConfiguration', $response->propSet);
 		$datastore->summary = self::getPropertyByName('summary', $response->propSet);
 		$datastore->configStatus = self::getPropertyByName('configStatus', $response->propSet);

@@ -7,7 +7,7 @@ namespace dnj\phpvmomi\DataObjects;
  */
 class VirtualDisk extends VirtualDevice
 {
-	/** @var int $capacityInKB */
+	/** @var float|int $capacityInKB */
 	public $capacityInKB;
 
 	/** @var SharesInfo $shares */
