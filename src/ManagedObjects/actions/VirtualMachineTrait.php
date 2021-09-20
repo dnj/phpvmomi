@@ -404,7 +404,7 @@ trait VirtualMachineTrait
 		$cdrom->connectable->connected = true;
 		$cdrom->connectable->startConnected = true;
 		$cdrom->controllerKey = 200;
-		$cdrom->unitNumber = 0;
+		// $cdrom->unitNumber = 0; // auto create number
 
 		$deviceChange = new VirtualDeviceConfigSpec();
 		$deviceChange->operation = "add";
