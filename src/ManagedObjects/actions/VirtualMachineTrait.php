@@ -6,7 +6,7 @@ use SplFileObject;
 use dnj\phpvmomi\API;
 use dnj\phpvmomi\Exception;
 use dnj\phpvmomi\DataObjects\{
-	ResourceAllocationInfo, ManagedObjectReference,
+	ResourceAllocationInfo, ManagedObjectReference, VirtualFloppy,
 	DynamicData, OptionValue, VirtualMachineConfigSpec, VirtualMachineFileInfo,
 	VirtualCdromAtapiBackingInfo, VirtualCdromIsoBackingInfo, VirtualCdrom, VirtualE1000,
 	VirtualVmxnet3, VirtualAHCIController, VirtualEthernetCard, VirtualDisk, VirtualIDEController,
@@ -329,7 +329,6 @@ trait VirtualMachineTrait
 		if (!preg_match("/^\[([^\]]+)\]\s+(.+)/", $file, $matches)) {
 			throw new Exception("wrong format");
 		}
-		dd($matches);
 
 		$datastores = $this->api->getDatastore()->list();
 		if (!$datastores) {

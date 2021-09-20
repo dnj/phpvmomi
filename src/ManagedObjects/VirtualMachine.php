@@ -1,10 +1,10 @@
 <?php
 namespace dnj\phpvmomi\ManagedObjects;
 
-use dnj\phpvmomi\DataObjects\Event;
-use dnj\phpvmomi\DataObjects\DynamicData;
-use dnj\phpvmomi\DataObjects\VirtualMachineRuntimeInfo;
-use dnj\phpvmomi\DataObjects\VirtualMachineConfigSpec;
+use dnj\phpvmomi\DataObjects\{
+	Event, DynamicData,
+	VirtualMachineConfigSpec, VirtualMachineRuntimeInfo, VirtualMachineSummary
+};
 use dnj\phpvmomi\Exceptions\BadCallMethod;
 
 /**
@@ -27,6 +27,11 @@ class VirtualMachine extends ManagedEntity
 	 * @var DynamicData $config
 	 */
 	public $config;
+
+	/**
+	 * @var VirtualMachineSummary $summary
+	 */
+	public $summary;
 
 	/**
 	 * @todo Move to right place

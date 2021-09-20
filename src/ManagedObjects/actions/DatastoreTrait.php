@@ -13,6 +13,11 @@ trait DatastoreTrait
 {
 	public $vmfs;
 
+	/**
+	 * @var string $id
+	 */
+	public $id;
+
 	public function list()
 	{
 		$response = $this->api->getPropertyCollector()->_RetrievePropertiesEx(array(

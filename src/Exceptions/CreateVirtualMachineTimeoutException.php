@@ -7,6 +7,6 @@ class CreateVirtualMachineTimeoutException extends Exception
 {
 	public function __construct($timeout)
 	{
-		parent::construct('Can not create machine in given timeout! (' . $timeout . ')');
+		$this->message = 'Can not create machine in given timeout! (' . $timeout . ')';
 	}
 }

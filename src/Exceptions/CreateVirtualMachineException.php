@@ -8,7 +8,7 @@ class CreateVirtualMachineException extends Exception
 	private $config;
 
 	public function __construct(string $message, array $config){
-		parent::__construct("virtual machine create failed, {$message}");
+		$this->message = "virtual machine create failed, {$message}";
 		$this->config = $config;
 	}
 
