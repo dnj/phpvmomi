@@ -97,7 +97,12 @@ trait VirtualMachineTrait
 					new SoapVar($b, SOAP_ENC_OBJECT, 'TraversalSpec'),
 				),
 			),
-		))->returnval;
+		));
+
+		if (empty($response->returnval)) {
+			return [];
+		}
+		$response = $response->returnval;
 
 		if (!is_array($response)) {
 			$response = [$response];
@@ -278,19 +283,15 @@ trait VirtualMachineTrait
 		$isoDatastore = null;
 		foreach ($datastores as $datastore) {
 			$items = $datastore->browse("/");
-			foreach ($items as $item) {
-				if ($item->path == $isoDir) {
-					$isoDatastore = $datastore;
-					break 2;
-				}
+			$itemsPath = array_map(fn($item) => $item->path, $items);
+			if (in_array($isoDir, $itemsPath)) {
+				$isoDatastore = $datastore;
+				break;
 			}
 		}
 
-		if ($isoDatastore and $isoDatastore->info->freeSpace <= $file->getSize()) {
-			$isoDatastore = null; // datastore does not have enough free space
-		}
-
 		$md5 = md5_file($file->getRealPath());
+
 		if ($isoDatastore) {
 			$items = $isoDatastore->browse('/' .ltrim($isoDir, '/'));
 			foreach ($items as $item) {
@@ -298,19 +299,33 @@ trait VirtualMachineTrait
 					return $isoDatastore->file($isoDir . "/" . $md5 . ".iso")->__toString();
 				}
 			}
-		} else {
+
+			if ($isoDatastore->info->freeSpace <= $file->getSize()) {
+				$isoDatastore = null; // datastore does not have enough free space
+			}
+		}
+
+		if (!$isoDatastore) {
 			foreach ($datastores as $datastore) {
 				if (!$isoDatastore or $datastore->info->freeSpace > $isoDatastore->info->freeSpace) {
 					$isoDatastore = $datastore;
 				}
 			}
-			if ($isoDatastore and $isoDatastore->info->freeSpace <= $file->getSize()) {
+			if (!$isoDatastore) {
+				throw new Exception('can not find any datastore');
+			}
+			if ($isoDatastore->info->freeSpace <= $file->getSize()) {
 				throw new Exception(
 					"can not find datastore with enough free space, datastore " . $isoDatastore->__toString() . " does not have enough space! ({$file->getSize()} needed, currently {$isoDatastore->info->freeSpace} is free)"
 				);
 			}
-			$isoDatastore->mkdir($isoDir);
+			$items = $isoDatastore->browse("/");
+			$itemsPath = array_map(fn($item) => $item->path, $items);
+			if (!in_array($isoDir, $itemsPath)) {
+				$isoDatastore->mkdir($isoDir);
+			}
 		}
+
 		$remote = $isoDatastore->file($isoDir . '/' . $md5 . '.iso');
 		$res = $remote->upload($file);
 		return $remote->__toString();
