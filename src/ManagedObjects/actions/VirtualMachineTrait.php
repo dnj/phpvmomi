@@ -11,7 +11,7 @@ use dnj\phpvmomi\DataObjects\{
 	VirtualCdromAtapiBackingInfo, VirtualCdromIsoBackingInfo, VirtualCdrom, VirtualE1000,
 	VirtualVmxnet3, VirtualAHCIController, VirtualEthernetCard, VirtualDisk, VirtualIDEController,
 	VirtualDiskFlatVer2BackingInfo, VirtualDeviceConfigSpec, VirtualPS2Controller, VirtualDeviceDeviceBackingInfo,
-	VirtualUSBController, VirtualLsiLogicController, VirtualMachineVideoCard, VirtualSIOController, VirtualPCIController,
+	VirtualUSBController, VirtualLsiLogicSASController, VirtualLsiLogicController, VirtualMachineVideoCard, VirtualSIOController, VirtualPCIController,
 	VirtualMachineBootOptions, VirtualMachineDefaultPowerOpInfo, VirtualMachineFlagInfo, ToolsConfigInfo, VirtualDeviceConnectInfo,
 	VirtualMachineBootOptionsBootableCdromDevice, VirtualMachineBootOptionsBootableDiskDevice,
 	VirtualMachineBootOptionsBootableEthernetDevice, VirtualMachineBootOptionsBootableFloppyDevice
@@ -686,8 +686,23 @@ trait VirtualMachineTrait
 		}
 		$result->deviceChange = array();
 		$devices = self::predefinedDevices();
+
+		$scsiController = null;
+		if (stripos($config['guest'], 'windows') !== false) {
+			$device = new VirtualLsiLogicSASController();
+			$scsiController = -810;
+
+		} else {
+			$device = new VirtualLsiLogicController();
+			$scsiController = -904;
+		}
+		$device->key = $scsiController;
+		$device->busNumber = 0;
+		$device->sharedBus = 'noSharing';
+		$devices[] = $device;
+
 		if(isset($config['hardware']['disk'])){
-			$devices[] = self::createDiskDevice($config);
+			$devices[] = self::createDiskDevice($config, $scsiController);
 		}
 		if(isset($config['hardware']['net'])){
 			$devices[] = self::createNetDevice($config);
@@ -788,14 +803,6 @@ trait VirtualMachineTrait
 		$device->enable3DSupport = false;
 		$devices[] = $device;
 
-
-		$device = new VirtualLsiLogicController();
-		$device->key = -904;
-		$device->busNumber = 0;
-		$device->sharedBus = 'noSharing';
-		$devices[] = $device;
-
-
 		$device = new VirtualAHCIController();
 		$device->key = -690;
 		$device->busNumber = 0;
@@ -808,7 +815,7 @@ trait VirtualMachineTrait
 		return $devices;
 	}
 
-	private static function createDiskDevice($config): VirtualDisk
+	private static function createDiskDevice($config, int $controllerKey): VirtualDisk
 	{
 		$device = new VirtualDisk();
 		$device->key = -1000000;
@@ -820,7 +827,7 @@ trait VirtualMachineTrait
 			$device->backing->thinProvisioned = $config['hardware']['disk']['thinProvisioned'];
 			$device->backing->eagerlyScrub = false;
 		$device->backing = new SoapVar($device->backing, SOAP_ENC_OBJECT, 'VirtualDiskFlatVer2BackingInfo');
-		$device->controllerKey = -904;
+		$device->controllerKey = $controllerKey;
 		$device->unitNumber = 0;
 		$device->capacityInKB = $config['hardware']['disk']['capacity'] * 1024;
 		$device->capacityInBytes = $config['hardware']['disk']['capacity'] * 1024 * 1024;

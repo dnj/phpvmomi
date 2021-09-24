@@ -56,6 +56,8 @@ class DataObjectsClassMap
 		'VirtualEthernetCardResourceAllocation' => DataObjects\VirtualEthernetCardResourceAllocation::class,
 		'VirtualFloppy' => DataObjects\VirtualFloppy::class,
 		'VirtualIDEController' => DataObjects\VirtualIDEController::class,
+		'VirtualSCSIController' => DataObjects\VirtualSCSIController::class,
+		'VirtualLsiLogicSASController' => DataObjects\VirtualLsiLogicSASController::class,
 		'VirtualLsiLogicController' => DataObjects\VirtualLsiLogicController::class,
 		'VirtualMachineBootOptions' => DataObjects\VirtualMachineBootOptions::class,
 		'VirtualMachineBootOptionsBootableDevice' => DataObjects\VirtualMachineBootOptionsBootableDevice::class,
