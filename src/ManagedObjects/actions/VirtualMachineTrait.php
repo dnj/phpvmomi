@@ -859,7 +859,7 @@ trait VirtualMachineTrait
 			$device->connectable->allowGuestControl = true;
 			$device->connectable->connected = $config['hardware']['net']['connected'];
 		$device->addressType = $config['hardware']['net']['addressType'];
-		$device->macAddress = $config['hardware']['net']['macAddress'];
+		$device->macAddress = $config['hardware']['net']['macAddress'] ?? "00:00:00:00:00:00";
 		return $device;
 	}
 
