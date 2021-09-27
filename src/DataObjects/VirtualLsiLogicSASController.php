@@ -1,4 +1,5 @@
 <?php
+
 namespace dnj\phpvmomi\DataObjects;
 
 /**

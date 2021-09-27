@@ -1,4 +1,5 @@
 <?php
+
 namespace dnj\phpvmomi\DataObjects;
 
 /**
@@ -8,8 +9,8 @@ namespace dnj\phpvmomi\DataObjects;
  */
 class CustomFieldValue extends DynamicData
 {
-	/**
-	 * @var int $key The ID of the field to which this value belongs.
-	 */
-	protected $key;
+    /**
+     * @var int the ID of the field to which this value belongs
+     */
+    protected $key;
 }

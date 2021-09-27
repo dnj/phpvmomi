@@ -1,4 +1,5 @@
 <?php
+
 namespace dnj\phpvmomi\DataObjects;
 
 /**
@@ -6,5 +7,4 @@ namespace dnj\phpvmomi\DataObjects;
  */
 class VirtualVmxnet extends VirtualEthernetCard
 {
-
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace dnj\phpvmomi\DataObjects;
 
 /**
@@ -6,9 +7,9 @@ namespace dnj\phpvmomi\DataObjects;
  */
 class ToolsConfigInfoToolsLastInstallInfo extends DynamicData
 {
-	/** @var int $counter */
-	public $counter;
+    /** @var int */
+    public $counter;
 
-	/** @var LocalizedMethodFault $afterPowerOn */
-	public $fault;
+    /** @var LocalizedMethodFault */
+    public $fault;
 }

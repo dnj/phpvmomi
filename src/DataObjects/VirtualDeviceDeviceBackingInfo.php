@@ -1,13 +1,14 @@
 <?php
+
 namespace dnj\phpvmomi\DataObjects;
 
 class VirtualDeviceDeviceBackingInfo extends VirtualDeviceBackingInfo
 {
-	use actions\VirtualDeviceDeviceBackingInfoTrait;
+    use actions\VirtualDeviceDeviceBackingInfoTrait;
 
-	/** @var string $deviceName */
-	public $deviceName;
+    /** @var string */
+    public $deviceName;
 
-	/** @var bool $useAutoDetect */
-	public $useAutoDetect;
+    /** @var bool */
+    public $useAutoDetect;
 }

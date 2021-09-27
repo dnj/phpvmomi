@@ -1,4 +1,5 @@
 <?php
+
 namespace dnj\phpvmomi\Faults;
 
 /**
@@ -6,5 +7,4 @@ namespace dnj\phpvmomi\Faults;
  */
 class VimFault extends MethodFault
 {
-
 }

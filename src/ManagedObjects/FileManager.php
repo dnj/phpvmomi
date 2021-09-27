@@ -1,7 +1,7 @@
 <?php
+
 namespace dnj\phpvmomi\ManagedObjects;
 
-use dnj\phpvmomi\DataObjects\Event;
 use dnj\phpvmomi\DataObjects\ManagedObjectReference;
 
 /**
@@ -20,7 +20,7 @@ use dnj\phpvmomi\DataObjects\ManagedObjectReference;
  * datastore is the datastore name.
  * path is a slash-delimited path from the root of the datastore.
  * An example datastore path is "[storage] path/to/file.extension". A listing of all the files, disks and folders on a datastore can be obtained from the datastore browser.
- * 
+ *
  * @todo complete methods
  *
  * @see HostDatastoreBrowser
@@ -28,37 +28,41 @@ use dnj\phpvmomi\DataObjects\ManagedObjectReference;
  */
 class FileManager extends ManagedEntity
 {
-	use actions\NeedAPITrait;
+    use actions\NeedAPITrait;
 
-	/**
-	 * @var string $name
-	 * @since vSphere API 4.0
-	 */
-	public $name;
+    /**
+     * @var string
+     *
+     * @since vSphere API 4.0
+     */
+    public $name;
 
-	/**
-	 * @var ManagedObjectReference<Datacenter> $datacenter
-	 * @since vSphere API 4.0
-	 */
-	public $datacenter;
+    /**
+     * @var ManagedObjectReference<Datacenter>
+     *
+     * @since vSphere API 4.0
+     */
+    public $datacenter;
 
-	/**
-	 * @var string $owner;
-	 * @since vSphere API 4.0
-	 */
-	public $owner;
+    /**
+     * @var string;
+     *
+     * @since vSphere API 4.0
+     */
+    public $owner;
 
-	public function _DeleteDatastoreFile_Task(string $name, $datacenter = null): Task
-	{
-		$params = array(
-			"_this" => $this->api->getServiceContent()->fileManager,
-			"name" => $name,
-		);
-		if ($datacenter) {
-			$params['datacenter'] = $datacenter;
-		}
+    public function _DeleteDatastoreFile_Task(string $name, $datacenter = null): Task
+    {
+        $params = [
+            '_this' => $this->api->getServiceContent()->fileManager,
+            'name' => $name,
+        ];
+        if ($datacenter) {
+            $params['datacenter'] = $datacenter;
+        }
 
-		$response = $this->api->getClient()->DeleteDatastoreFile_Task($params);
-		return $this->api->getTask()->byID($response->returnval->_);
-	}
+        $response = $this->api->getClient()->DeleteDatastoreFile_Task($params);
+
+        return $this->api->getTask()->byID($response->returnval->_);
+    }
 }

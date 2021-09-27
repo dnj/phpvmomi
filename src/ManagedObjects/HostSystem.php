@@ -1,111 +1,108 @@
 <?php
-namespace dnj\phpvmomi\ManagedObjects;
 
-use dnj\phpvmomi\API;
-use dnj\phpvmomi\DataObjects\Event;
+namespace dnj\phpvmomi\ManagedObjects;
 
 /**
  * @see https://vdc-download.vmware.com/vmwb-repository/dcr-public/b50dcbbf-051d-4204-a3e7-e1b618c1e384/538cf2ec-b34f-4bae-a332-3820ef9e7773/vim.HostSystem.html
  */
 class HostSystem extends ManagedEntity
 {
-	public const TYPE = 'HostSystem';
+    use actions\NeedAPITrait;
+    use actions\HostSystemTrait;
+    public const TYPE = 'HostSystem';
 
-	use actions\NeedAPITrait,
-		actions\HostSystemTrait;
+    /**
+     * @var AnswerFileStatusResult
+     */
+    public $answerFileValidationResult;
 
-	/**
-	 * @var AnswerFileStatusResult $answerFileValidationResult
-	 */
-	public $answerFileValidationResult;
+    /**
+     * @var AnswerFileStatusResult
+     */
+    public $answerFileValidationState;
 
-	/**
-	 * @var AnswerFileStatusResult $answerFileValidationState
-	 */
-	public $answerFileValidationState;
+    /**
+     * @var HostCapability
+     */
+    public $capability;
 
-	/**
-	 * @var HostCapability $answerFileValidationState
-	 */
-	public $capability;
+    /**
+     * @var ComplianceResult
+     */
+    public $complianceCheckResult;
 
-	/**
-	 * @var ComplianceResult $complianceCheckResult
-	 */
-	public $complianceCheckResult;
+    /**
+     * @var HostSystemComplianceCheckState
+     */
+    public $complianceCheckState;
 
-	/**
-	 * @var HostSystemComplianceCheckState $complianceCheckState
-	 */
-	public $complianceCheckState;
+    /**
+     * @var HostConfigInfo
+     */
+    public $config;
 
-	/**
-	 * @var HostConfigInfo $config
-	 */
-	public $config;
+    /**
+     * 	@var HostConfigManager
+     */
+    public $configManager;
 
-	/**
-	 * 	@var HostConfigManager $configManager
-	 */
-	public $configManager;
+    /**
+     * @var Datastore[]
+     */
+    public $datastore;
 
-	/**
-	 * @var Datastore[] $datastore
-	 */
-	public $datastore;
+    /**
+     * @var HostDatastoreBrowser
+     */
+    public $datastoreBrowser;
 
-	/**
-	 * @var HostDatastoreBrowser $datastoreBrowser
-	 */
-	public $datastoreBrowser;
+    /**
+     * @var HostHardwareInfo
+     */
+    public $hardware;
 
-	/**
-	 * @var HostHardwareInfo $hardware
-	 */
-	public $hardware;
+    /**
+     * @var HostLicensableResourceInfo
+     */
+    public $licensableResource;
 
-	/**
-	 * @var HostLicensableResourceInfo $licensableResource
-	 */
-	public $licensableResource;
+    /**
+     * @var Network[]
+     */
+    public $network;
 
-	/**
-	 * @var Network[] $network
-	 */
-	public $network;
+    /**
+     * @var ApplyHostProfileConfigurationSpec
+     */
+    public $precheckRemediationResult;
 
-	/**
-	 * @var ApplyHostProfileConfigurationSpec $precheckRemediationResult
-	 */
-	public $precheckRemediationResult;
+    /**
+     * @var ApplyHostProfileConfigurationResult $remediationResult
+     */
+    public $remediationResult;
 
-	/**
-	 * @var ApplyHostProfileConfigurationResult	$remediationResult
-	 */
-	public $remediationResult;
+    /**
+     * @var HostSystemRemediationState
+     */
+    public $remediationState;
 
-	/**
-	 * @var HostSystemRemediationState $remediationState
-	 */
-	public $remediationState;
+    /**
+     * @var HostRuntimeInfo
+     */
+    public $runtime;
 
-	/**
-	 * @var HostRuntimeInfo $runtime
-	 */
-	public $runtime;
+    /**
+     * @var HostListSummary
+     */
+    public $summary;
 
-	/**
-	 * @var HostListSummary $summary
-	 */
-	public $summary;
+    /**
+     * @var HostSystemResourceInfo
+     */
+    public $systemResources;
 
-	/**
-	 * @var HostSystemResourceInfo $systemResources
-	 */
-	public $systemResources;
-
-	/**
-	 * @var VirtualMachine[] $vm
-	 */
-	public $vm;
+    /**
+     * @var VirtualMachine[]
+     */
+    public $vm;
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace dnj\phpvmomi\DataObjects;
 
 /**
@@ -6,18 +7,18 @@ namespace dnj\phpvmomi\DataObjects;
  */
 class LocalizableMessage extends DynamicData
 {
-	/**
-	 * @var KeyAnyValue[] $arg
-	 */
-	public $arg;
+    /**
+     * @var KeyAnyValue[]
+     */
+    public $arg;
 
-	/**
-	 * @var string $localizedMessage Unique key identifying the message in the localized message catalog.
-	 */
-	public $key;
+    /**
+     * @var string unique key identifying the message in the localized message catalog
+     */
+    public $key;
 
-	/**
-	 * @var string $message Message in session locale. Use vim.SessionManager.setLocale() to change the session locale.
-	 */
-	public $message;
+    /**
+     * @var string Message in session locale. Use vim.SessionManager.setLocale() to change the session locale.
+     */
+    public $message;
 }

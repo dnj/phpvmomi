@@ -1,4 +1,5 @@
 <?php
+
 namespace dnj\phpvmomi\DataObjects;
 
 /**
@@ -8,18 +9,18 @@ namespace dnj\phpvmomi\DataObjects;
  */
 class VirtualEthernetCardResourceAllocation extends DynamicData
 {
-	/**
-	 * @var int $apiType The bandwidth limit for the virtual network adapter. The utilization of the virtual network adapter will not exceed this limit, even if there are available resources. To clear the value of this property and revert it to unset, set the vaule to "-1" in an update operation. Units in Mbits/sec. 
-	 */
-	public $limit;
+    /**
+     * @var int The bandwidth limit for the virtual network adapter. The utilization of the virtual network adapter will not exceed this limit, even if there are available resources. To clear the value of this property and revert it to unset, set the vaule to "-1" in an update operation. Units in Mbits/sec.
+     */
+    public $limit;
 
-	/**
-	 * @var int $reservation Amount of network bandwidth that is guaranteed to the virtual network adapter. If utilization is less than reservation, the resource can be used by other virtual network adapters. Reservation is not allowed to exceed the value of limit if limit is set. Units in Mbits/sec.
-	 */
-	public $reservation;
+    /**
+     * @var int Amount of network bandwidth that is guaranteed to the virtual network adapter. If utilization is less than reservation, the resource can be used by other virtual network adapters. Reservation is not allowed to exceed the value of limit if limit is set. Units in Mbits/sec.
+     */
+    public $reservation;
 
-	/**
-	 * @var SharesInfo $share Network share. The value is used as a relative weight in competing for shared bandwidth, in case of resource contention.
-	 */
-	public $share;
+    /**
+     * @var SharesInfo Network share. The value is used as a relative weight in competing for shared bandwidth, in case of resource contention.
+     */
+    public $share;
 }

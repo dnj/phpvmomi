@@ -3,12 +3,6 @@
     "description": "PHP VMware Managed Object Management Interface",
     "type": "library",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Hossein Hosni",
-            "email": "hosni.hossein@gmail.com"
-        }
-    ],
     "autoload": {
         "psr-4": {
             "dnj\\phpvmomi\\": "src"
@@ -20,12 +14,15 @@
         "ext-soap": "*"
     },
     "require-dev": {
-        "phpstan/phpstan": "^0.12.85"
+        "phpstan/phpstan": "^0.12.85",
+        "friendsofphp/php-cs-fixer": "^3.1"
     },
     "scripts": {
-        "test:types": "./vendor/phpstan/phpstan/phpstan analyse --debug --memory-limit 128M",
+        "test:types": "./vendor/phpstan/phpstan/phpstan analyse",
+        "test:codestyle": "vendor/bin/php-cs-fixer fix -v --dry-run --stop-on-violation --using-cache=no",
         "test": [
-            "@test:types"
+            "@test:types",
+            "@test:codestyle"
         ]
     }
 }

@@ -1,14 +1,12 @@
 <?php
-namespace dnj\phpvmomi\DataObjects;
 
-use dnj\phpvmomi\ManagedObjects\Network;
+namespace dnj\phpvmomi\DataObjects;
 
 class VirtualEthernetCardNetworkBackingInfo extends VirtualDeviceBackingInfo
 {
+    /** @var \dnj\phpvmomi\ManagedObjects\Network */
+    public $network;
 
-	/** @var \dnj\phpvmomi\ManagedObjects\Network $network */
-	public $network;
-
-	/** @var bool $inPassthroughMode */
-	public $inPassthroughMode;
+    /** @var bool */
+    public $inPassthroughMode;
 }

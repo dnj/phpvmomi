@@ -1,4 +1,5 @@
 <?php
+
 namespace dnj\phpvmomi\DataObjects;
 
 /**
@@ -8,36 +9,39 @@ namespace dnj\phpvmomi\DataObjects;
  */
 class CustomFieldDef extends DynamicData
 {
-	/**
-	 * @var PrivilegePolicyDef $fieldDefPrivileges The set of privileges to apply on this field definition
-	 * @since VI API 2.5
-	 */
-	protected $fieldDefPrivileges;
+    /**
+     * @var PrivilegePolicyDef The set of privileges to apply on this field definition
+     *
+     * @since VI API 2.5
+     */
+    protected $fieldDefPrivileges;
 
-	/**
-	 * @var PrivilegePolicyDef $fieldInstancePrivileges The set of privileges to apply on instances of this field
-	 * @since VI API 2.5
-	 */
-	protected $fieldInstancePrivileges;
+    /**
+     * @var PrivilegePolicyDef The set of privileges to apply on instances of this field
+     *
+     * @since VI API 2.5
+     */
+    protected $fieldInstancePrivileges;
 
-	/**
-	 * @var int $key A unique ID used to reference this custom field in assignments. This ID is unique for the lifetime of the field (even across rename operations). 
-	 */
-	protected $key;
+    /**
+     * @var int A unique ID used to reference this custom field in assignments. This ID is unique for the lifetime of the field (even across rename operations).
+     */
+    protected $key;
 
-	/**
-	 * @var string $managedObjectType Type of object for which the field is valid. If not specified, the field is valid for all managed objects. 
-	 * @since VI API 2.5
-	 */
-	protected $managedObjectType;
+    /**
+     * @var string Type of object for which the field is valid. If not specified, the field is valid for all managed objects.
+     *
+     * @since VI API 2.5
+     */
+    protected $managedObjectType;
 
-	/**
-	 * @var string $name Name of the field. 
-	 */
-	protected $name;
+    /**
+     * @var string name of the field
+     */
+    protected $name;
 
-	/**
-	 * @var string $type Type of the field. 
-	 */
-	protected $type;
+    /**
+     * @var string type of the field
+     */
+    protected $type;
 }

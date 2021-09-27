@@ -1,4 +1,5 @@
 <?php
+
 namespace dnj\phpvmomi\DataObjects;
 
 /**
@@ -6,19 +7,18 @@ namespace dnj\phpvmomi\DataObjects;
  */
 class ResourceAllocationInfo extends DynamicData
 {
+    /** @var int */
+    public $reservation;
 
-	/** @var int $reservation */
-	public $reservation;
+    /** @var bool */
+    public $expandableReservation;
 
-	/** @var bool $expandableReservation */
-	public $expandableReservation;
+    /** @var int */
+    public $limit;
 
-	/** @var int $limit */
-	public $limit;
+    /** @var SharesInfo */
+    public $shares;
 
-	/** @var SharesInfo $shares */
-	public $shares;
-
-	/** @var int $overheadLimit */
-	public $overheadLimit;
+    /** @var int */
+    public $overheadLimit;
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace dnj\phpvmomi\ManagedObjects;
 
 use dnj\phpvmomi\DataObjects\CustomFieldDef;
@@ -9,7 +10,7 @@ use dnj\phpvmomi\DataObjects\CustomFieldValue;
  * Use the CustomFieldsManager to define custom fields.
  * The CustomFieldsManager handles the entire list of custom fields on a server.
  * You can can specify the object type to which a particular custom field applies by setting its managedObjectType.
- * (If you do not set a managed object type for a custom field definition, the field applies to all managed objects.) 
+ * (If you do not set a managed object type for a custom field definition, the field applies to all managed objects.).
  *
  * Required privilege: System.View
  *
@@ -17,26 +18,27 @@ use dnj\phpvmomi\DataObjects\CustomFieldValue;
  */
 class ExtensibleManagedObject
 {
-	use actions\NeedAPITrait;
+    use actions\NeedAPITrait;
 
-	/**
-	 * @var CustomFieldDef[] $availableField List of custom field definitions that are valid for the object's type. The fields are sorted by name. 
-	 * @since VI API 2.5
-	 */
-	protected $availableField;
+    /**
+     * @var CustomFieldDef[] List of custom field definitions that are valid for the object's type. The fields are sorted by name.
+     *
+     * @since VI API 2.5
+     */
+    protected $availableField;
 
-	/**
-	 * @var CustomFieldValue[] $value List of custom field values. Each value uses a key to associate an instance of a CustomFieldStringValue with a custom field definition. 
-	 * @since VI API 2.5
-	 */
-	protected $value;
+    /**
+     * @var CustomFieldValue[] List of custom field values. Each value uses a key to associate an instance of a CustomFieldStringValue with a custom field definition.
+     *
+     * @since VI API 2.5
+     */
+    protected $value;
 
-	/**
-	 * Assigns a value to a custom field.
-	 * The setCustomValue method requires whichever updatePrivilege is defined as one of the fieldInstancePrivileges for the CustomFieldDef whose value is being changed.
-	 */
-	public function _setCustomValue(): void
-	{
-
-	}
+    /**
+     * Assigns a value to a custom field.
+     * The setCustomValue method requires whichever updatePrivilege is defined as one of the fieldInstancePrivileges for the CustomFieldDef whose value is being changed.
+     */
+    public function _setCustomValue(): void
+    {
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace dnj\phpvmomi\DataObjects;
 
 /**
@@ -6,9 +7,9 @@ namespace dnj\phpvmomi\DataObjects;
  */
 class StorageIOAllocationInfo extends DynamicData
 {
-	/** @var int $limit */
-	public $limit;
+    /** @var int */
+    public $limit;
 
-	/** @var SharesInfo $shares */
-	public $shares;
+    /** @var SharesInfo */
+    public $shares;
 }

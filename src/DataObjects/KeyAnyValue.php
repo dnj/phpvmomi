@@ -1,4 +1,5 @@
 <?php
+
 namespace dnj\phpvmomi\DataObjects;
 
 /**
@@ -6,14 +7,13 @@ namespace dnj\phpvmomi\DataObjects;
  */
 class KeyAnyValue extends DynamicData
 {
+    /**
+     * @var string the key
+     */
+    public $key;
 
-	/**
-	 * @var string $localizedMessage the key
-	 */
-	public $key;
-
-	/**
-	 * @var mixed $value the value
-	 */
-	public $value;
+    /**
+     * @var mixed the value
+     */
+    public $value;
 }

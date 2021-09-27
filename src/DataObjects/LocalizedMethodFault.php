@@ -1,4 +1,5 @@
 <?php
+
 namespace dnj\phpvmomi\DataObjects;
 
 use dnj\phpvmomi\Faults\MethodFault;
@@ -8,14 +9,14 @@ use dnj\phpvmomi\Faults\MethodFault;
  */
 class LocalizedMethodFault extends DynamicData
 {
-	/**
-	 * @var MethodFault $apiType
-	 */
-	public $fault;
+    /**
+     * @var MethodFault
+     */
+    public $fault;
 
-	/**
-	 * @var string $localizedMessage The localized message that would be sent in the faultstring element of the SOAP Fault.
-	 * 								It is optional so that clients are not required to send a localized message to the server, but servers are required to send the localized message to clients.
-	 */
-	public $localizedMessage;
+    /**
+     * @var string The localized message that would be sent in the faultstring element of the SOAP Fault.
+     *             It is optional so that clients are not required to send a localized message to the server, but servers are required to send the localized message to clients.
+     */
+    public $localizedMessage;
 }

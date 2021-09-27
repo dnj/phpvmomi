@@ -1,4 +1,5 @@
 <?php
+
 namespace dnj\phpvmomi\DataObjects;
 
 /**
@@ -8,23 +9,23 @@ namespace dnj\phpvmomi\DataObjects;
  */
 class PrivilegePolicyDef extends DynamicData
 {
-	/**
-	 * @var string $createPrivilege Name of privilege required for creation. 
-	 */
-	protected $createPrivilege;
+    /**
+     * @var string name of privilege required for creation
+     */
+    protected $createPrivilege;
 
-	/**
-	 * @var string $deletePrivilege Name of privilege required for deleting. 
-	 */
-	protected $deletePrivilege;
+    /**
+     * @var string name of privilege required for deleting
+     */
+    protected $deletePrivilege;
 
-	/**
-	 * @var string $readPrivilege Name of privilege required for reading. 
-	 */
-	protected $readPrivilege;
+    /**
+     * @var string name of privilege required for reading
+     */
+    protected $readPrivilege;
 
-	/**
-	 * @var string $updatePrivilege Name of privilege required for updating. 
-	 */
-	protected $updatePrivilege;
+    /**
+     * @var string name of privilege required for updating
+     */
+    protected $updatePrivilege;
 }
