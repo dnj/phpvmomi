@@ -23,7 +23,7 @@ class SoapClient extends \SoapClient
                 if ($value instanceof DynamicData) {
                     $value->getSoapData();
                 } else {
-                    self::checkForDynamicData($value);
+                    $value = self::checkForDynamicData($value);
                 }
             }
             if (is_object($arguments)) {

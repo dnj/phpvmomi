@@ -23,7 +23,7 @@ class HostPortGroup extends DynamicData
     public $key;
 
     /**
-     * @var HostPortGroupPort[] $port
+     * @var HostPortGroupPort[]
      */
     public $port;
 

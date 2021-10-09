@@ -27,4 +27,10 @@ class VirtualDeviceConfigSpec extends DynamicData
      * @var DynamicData
      */
     public $profile;
+
+    public function __construct(VirtualDevice $device, ?string $operation = null)
+    {
+        $this->device = $device;
+        $this->operation = $operation;
+    }
 }

@@ -9,9 +9,6 @@ namespace dnj\phpvmomi\ManagedObjects;
  */
 class Network extends ManagedEntity
 {
-    use actions\NetworkTrait;
-    public const TYPE = 'Network';
-
     public $host;
 
     public $name;

@@ -2,7 +2,6 @@
 
 namespace dnj\phpvmomi\DataObjects;
 
-use dnj\phpvmomi\ManagedObjects;
 use dnj\phpvmomi\ManagedObjects\ManagedObjectReference;
 
 /**
@@ -18,247 +17,247 @@ class ServiceContent extends DynamicData
     public $about;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\HostLocalAccountManager>
+     * @var ManagedObjectReference
      */
     public $accountManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\AlarmManager>
+     * @var ManagedObjectReference
      */
     public $alarmManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\AuthorizationManager>
+     * @var ManagedObjectReference
      */
     public $authorizationManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\CertificateManager>
+     * @var ManagedObjectReference
      */
     public $certificateManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\ClusterProfileManager>
+     * @var ManagedObjectReference
      */
     public $clusterProfileManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\ProfileComplianceManager>
+     * @var ManagedObjectReference
      */
     public $complianceManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\CryptoManager>
+     * @var ManagedObjectReference
      */
     public $cryptoManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\CustomFieldsManager>
+     * @var ManagedObjectReference
      */
     public $customFieldsManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\CustomizationSpecManager>
+     * @var ManagedObjectReference
      */
     public $customizationSpecManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\DatastoreNamespaceManager>
+     * @var ManagedObjectReference
      */
     public $datastoreNamespaceManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\DiagnosticManager>
+     * @var ManagedObjectReference
      */
     public $diagnosticManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\DistributedVirtualSwitchManager>
+     * @var ManagedObjectReference
      */
     public $dvSwitchManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\EventManager>
+     * @var ManagedObjectReference
      */
     public $eventManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\ExtensionManager>
+     * @var ManagedObjectReference
      */
     public $extensionManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\FailoverClusterConfigurator>
+     * @var ManagedObjectReference
      */
     public $failoverClusterConfigurator;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\FailoverClusterManager>
+     * @var ManagedObjectReference
      */
     public $failoverClusterManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\FileManager>
+     * @var ManagedObjectReference
      */
     public $fileManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\VirtualMachineGuestCustomizationManager>
+     * @var ManagedObjectReference
      */
     public $guestCustomizationManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\GuestOperationsManager>
+     * @var ManagedObjectReference
      */
     public $guestOperationsManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\HealthUpdateManager>
+     * @var ManagedObjectReference
      */
     public $healthUpdateManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\HostProfileManager>
+     * @var ManagedObjectReference
      */
     public $hostProfileManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\HostSpecificationManager>
+     * @var ManagedObjectReference
      */
     public $hostSpecManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\IoFilterManager>
+     * @var ManagedObjectReference
      */
     public $ioFilterManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\IpPoolManager>
+     * @var ManagedObjectReference
      */
     public $ipPoolManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\LicenseManager>
+     * @var ManagedObjectReference
      */
     public $licenseManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\LocalizationManager>
+     * @var ManagedObjectReference
      */
     public $localizationManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\OverheadMemoryManager>
+     * @var ManagedObjectReference
      */
     public $overheadMemoryManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\OvfManager>
+     * @var ManagedObjectReference
      */
     public $ovfManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\PerformanceManager>
+     * @var ManagedObjectReference
      */
     public $perfManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\PropertyCollector>
+     * @var ManagedObjectReference
      */
     public $propertyCollector;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\Folder>
+     * @var ManagedObjectReference
      */
     public $rootFolder;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\ScheduledTaskManager>
+     * @var ManagedObjectReference
      */
     public $scheduledTaskManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\SearchIndex>
+     * @var ManagedObjectReference
      */
     public $searchIndex;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\ServiceManager>
+     * @var ManagedObjectReference
      */
     public $serviceManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\SessionManager>
+     * @var ManagedObjectReference
      */
     public $sessionManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\OptionManager>
+     * @var ManagedObjectReference
      */
     public $setting;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\SiteInfoManager>
+     * @var ManagedObjectReference
      */
     public $siteInfoManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\HostSnmpSystem>
+     * @var ManagedObjectReference
      */
     public $snmpSystem;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\StorageQueryManager>
+     * @var ManagedObjectReference
      */
     public $storageQueryManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\StorageResourceManager>
+     * @var ManagedObjectReference
      */
     public $storageResourceManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\TaskManager>
+     * @var ManagedObjectReference
      */
     public $taskManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\TenantTenantManager>
+     * @var ManagedObjectReference
      */
     public $tenantManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\UserDirectory>
+     * @var ManagedObjectReference
      */
     public $userDirectory;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\ViewManager>
+     * @var ManagedObjectReference
      */
     public $viewManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\VirtualDiskManager>
+     * @var ManagedObjectReference
      */
     public $virtualDiskManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\VirtualizationManager>
+     * @var ManagedObjectReference
      */
     public $virtualizationManager;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\VirtualMachineCompatibilityChecker>
+     * @var ManagedObjectReference
      */
     public $vmCompatibilityChecker;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\VirtualMachineProvisioningChecker>
+     * @var ManagedObjectReference
      */
     public $vmProvisioningChecker;
 
     /**
-     * @var ManagedObjectReference<ManagedObjects\VStorageObjectManagerBase>
+     * @var ManagedObjectReference
      */
     public $vStorageObjectManager;
 }

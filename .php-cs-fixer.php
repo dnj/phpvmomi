@@ -1,7 +1,7 @@
 <?php
 
 $finder = PhpCsFixer\Finder::create()
-    ->in(["src"]);
+    ->in([__DIR__ . "/src", __DIR__ . "/tests"]);
 
 $config = new PhpCsFixer\Config();
 return $config->setRules([

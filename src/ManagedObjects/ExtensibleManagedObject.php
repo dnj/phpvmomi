@@ -18,8 +18,6 @@ use dnj\phpvmomi\DataObjects\CustomFieldValue;
  */
 class ExtensibleManagedObject
 {
-    use actions\NeedAPITrait;
-
     /**
      * @var CustomFieldDef[] List of custom field definitions that are valid for the object's type. The fields are sorted by name.
      *

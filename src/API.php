@@ -2,21 +2,21 @@
 
 namespace dnj\phpvmomi;
 
+use dnj\phpvmomi\DataObjects\ManagedObjectReference;
 use dnj\phpvmomi\DataObjects\ServiceContent;
 use dnj\phpvmomi\Exceptions\MissingOptionException;
-use dnj\phpvmomi\ManagedObjects\ExtensibleManagedObject;
+use dnj\phpvmomi\ManagedObjects\ManagedEntity;
+use dnj\phpvmomi\ManagedObjects\PropertyCollector;
 use dnj\phpvmomi\ManagedObjects\ServiceInstance;
-use SoapFault;
+use dnj\phpvmomi\ManagedObjects\SessionManager;
+use dnj\phpvmomi\ManagedObjects\ViewManager;
 
 /**
- * @method \dnj\phpvmomi\ManagedObjects\Task             getTask()
- * @method \dnj\phpvmomi\ManagedObjects\SessionManager   getSessionManager()
- * @method \dnj\phpvmomi\ManagedObjects\ServiceInstance  getServiceInstance()
- * @method \dnj\phpvmomi\ManagedObjects\PropertyCollecto getPropertyCollector()
- * @method \dnj\phpvmomi\ManagedObjects\VirtualMachine   getVirtualMachine()
- * @method \dnj\phpvmomi\ManagedObjects\FileManager      getFileManager()
- * @method \dnj\phpvmomi\ManagedObjects\DataStore        getDatastore()
- * @method \dnj\phpvmomi\ManagedObjects\Network          getNetwork()
+ * @method \dnj\phpvmomi\ManagedObjects\SessionManager         getSessionManager()
+ * @method \dnj\phpvmomi\ManagedObjects\PropertyCollector      getPropertyCollector()
+ * @method \dnj\phpvmomi\ManagedObjects\FileManager            getFileManager()
+ * @method \dnj\phpvmomi\ManagedObjects\VirtualDiskManager     getVirtualDiskManager()
+ * @method \dnj\phpvmomi\ManagedObjects\GuestOperationsManager getGuestOperationsManager()
  */
 class API
 {
@@ -35,11 +35,11 @@ class API
     ];
 
     protected ?SoapClient $client = null;
-
-    protected ?ServiceContent $serviceContent = null;
+    protected ?ServiceInstance $serviceInstance = null;
+    protected array $managedObjectsCache = [];
 
     /**
-     * @param array<string, mixed> $options
+     * @param array<string,mixed> $options
      */
     public function __construct(array $options)
     {
@@ -47,9 +47,6 @@ class API
 
         if (!$this->options['sdk']) {
             throw new MissingOptionException('sdk');
-        }
-        if (!$this->options['datastore-browser']) {
-            throw new MissingOptionException('datastore-browser');
         }
         if (!$this->options['username']) {
             throw new MissingOptionException('username');
@@ -68,20 +65,26 @@ class API
     /**
      * @param array<mixed> $arguments
      *
-     * @return ExtensibleManagedObject|ServiceInstance
+     * @return ManagedEntity
      */
     public function __call(string $name, array $arguments)
     {
-        if (strlen($name) <= 3 or
-            'get' != substr($name, 0, 3) or
-            !array_key_exists(substr($name, 3), ClassMap\ManagedObjectsClassMap::CLASS_MAP)
-        ) {
-            trigger_error('Call to undefined method '.__CLASS__."::{$name}", E_USER_ERROR);
+        if (strlen($name) <= 3 or 'get' != substr($name, 0, 3)) {
+            throw new Exception('Call to undefined method '.__CLASS__."::{$name}");
         }
         $className = substr($name, 3);
-        $classString = ClassMap\ManagedObjectsClassMap::CLASS_MAP[$className];
+        $property = lcfirst($className);
+        $content = $this->getServiceContent();
+        if (!isset($content->{$property})) {
+            throw new Exception('Call to undefined method '.__CLASS__."::{$name}");
+        }
+        $result = $content->{$property};
 
-        return new $classString($this);
+        if ($result instanceof ManagedObjectReference) {
+            $result = $result->get($this);
+        }
+
+        return $result;
     }
 
     /**
@@ -146,15 +149,68 @@ class API
         );
     }
 
+    public function getServiceInstance(): ServiceInstance
+    {
+        if (!$this->serviceInstance) {
+            $this->serviceInstance = new ServiceInstance($this);
+        }
+
+        return $this->serviceInstance;
+    }
+
     public function getServiceContent(): ServiceContent
     {
-        if ($this->serviceContent) {
-            return $this->serviceContent;
+        $content = $this->getServiceInstance()->content;
+        if (!$content) {
+            $this->serviceInstance->content = $content = $this->serviceInstance->_RetrieveServiceContent();
+            $this->prepareManagedObjectsCache();
         }
-        try {
-            return $this->serviceContent = $this->getServiceInstance()->_RetrieveServiceContent();
-        } catch (SoapFault $e) {
-            throw $e;
+
+        return $content;
+    }
+
+    public function isInited(): bool
+    {
+        return null !== $this->serviceInstance;
+    }
+
+    /**
+     * @return "VirtualCenter"|"HostAgent"
+     */
+    public function getApiType(): string
+    {
+        return $this->getServiceContent()->about->apiType;
+    }
+
+    public function getManagedObjectCache(string $type, string $id): ?ManagedEntity
+    {
+        return $this->managedObjectsCache[$type.'-'.$id] ?? null;
+    }
+
+    public function addToManagedObjectCache(?ManagedEntity $obj, ?string $type = null, ?string $id = null): void
+    {
+        if (null === $obj and (null === $type or null === $id)) {
+            throw new Exception('need type and id for deleting from cache');
+        }
+        if (!$type) {
+            $type = $obj->type();
+        }
+        if (!$id) {
+            $id = $obj->id;
+        }
+        $this->managedObjectsCache[$type.'-'.$id] = $obj;
+    }
+
+    protected function prepareManagedObjectsCache(): void
+    {
+        foreach ([PropertyCollector::class, SessionManager::class, ViewManager::class] as $class) {
+            $name = substr($class, strrpos($class, '\\') + 1);
+            $property = lcfirst($name);
+            if (isset($this->serviceInstance->content->{$property})) {
+                $obj = new $class($this);
+                $obj->id = $this->serviceInstance->content->{$property}->_;
+                $this->addToManagedObjectCache($obj);
+            }
         }
     }
 }

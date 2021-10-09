@@ -3,10 +3,12 @@
 namespace dnj\phpvmomi\ManagedObjects;
 
 use dnj\phpvmomi\DataObjects\DynamicData;
+use dnj\phpvmomi\DataObjects\GuestInfo;
+use dnj\phpvmomi\DataObjects\ManagedObjectReference;
+use dnj\phpvmomi\DataObjects\VirtualMachineCloneSpec;
 use dnj\phpvmomi\DataObjects\VirtualMachineConfigSpec;
 use dnj\phpvmomi\DataObjects\VirtualMachineRuntimeInfo;
 use dnj\phpvmomi\DataObjects\VirtualMachineSummary;
-use dnj\phpvmomi\Exceptions\BadCallMethod;
 
 /**
  * @todo complete
@@ -15,10 +17,7 @@ use dnj\phpvmomi\Exceptions\BadCallMethod;
  */
 class VirtualMachine extends ManagedEntity
 {
-    use actions\NeedAPITrait;
     use actions\VirtualMachineTrait;
-
-    public const TYPE = 'VirtualMachine';
 
     /**
      * @var VirtualMachineRuntimeInfo
@@ -31,9 +30,29 @@ class VirtualMachine extends ManagedEntity
     public $config;
 
     /**
+     * @var GuestInfo|null
+     */
+    public $guest;
+
+    /**
      * @var VirtualMachineSummary
      */
     public $summary;
+
+    /**
+     * @var ManagedObjectReference
+     */
+    public $parent;
+
+    /**
+     * @var ManagedObjectReference[]|null
+     */
+    public $datastore;
+
+    /**
+     * @var ManagedObjectReference|null
+     */
+    public $resourcePool;
 
     /**
      * @todo Move to right place
@@ -48,122 +67,68 @@ class VirtualMachine extends ManagedEntity
 
     public function _PowerOnVM_Task(): Task
     {
-        if (empty($this->id)) {
-            throw new BadCallMethod('Can not call method: '.__CLASS__.'@'.__FUNCTION__.'! ID is not setted!');
-        }
-        $response = $this->api->getClient()->PowerOnVM_Task([
-            '_this' => [
-                '_' => $this->id,
-                'type' => self::TYPE,
-            ],
-        ]);
-
-        return $this->api->getTask()->byID($response->returnval->_);
+        return $this->api->getClient()->PowerOnVM_Task([
+            '_this' => $this->ref(),
+        ])->returnval->get($this->api);
     }
 
     public function _PowerOffVM_Task(): Task
     {
-        if (empty($this->id)) {
-            throw new BadCallMethod('Can not call method: '.__CLASS__.'@'.__FUNCTION__.'! ID is not setted!');
-        }
-        $response = $this->api->getClient()->PowerOffVM_Task([
-            '_this' => [
-                '_' => $this->id,
-                'type' => self::TYPE,
-            ],
-        ]);
-
-        return $this->api->getTask()->byID($response->returnval->_);
+        return $this->api->getClient()->PowerOffVM_Task([
+            '_this' => $this->ref(),
+        ])->returnval->get($this->api);
     }
 
     public function _ResetVM_Task(): Task
     {
-        if (empty($this->id)) {
-            throw new BadCallMethod('Can not call method: '.__CLASS__.'@'.__FUNCTION__.'! ID is not setted!');
-        }
-        $response = $this->api->getClient()->ResetVM_Task([
-            '_this' => [
-                '_' => $this->id,
-                'type' => self::TYPE,
-            ],
-        ]);
-
-        return $this->api->getTask()->byID($response->returnval->_);
+        return $this->api->getClient()->ResetVM_Task([
+            '_this' => $this->ref(),
+        ])->returnval->get($this->api);
     }
 
     public function _SuspendVM_Task(): Task
     {
-        if (empty($this->id)) {
-            throw new BadCallMethod('Can not call method: '.__CLASS__.'@'.__FUNCTION__.'! ID is not setted!');
-        }
-        $response = $this->api->getClient()->SuspendVM_Task([
-            '_this' => [
-                '_' => $this->id,
-                'type' => self::TYPE,
-            ],
-        ]);
-
-        return $this->api->getTask()->byID($response->returnval->_);
+        return $this->api->getClient()->SuspendVM_Task([
+            '_this' => $this->ref(),
+        ])->returnval->get($this->api);
     }
 
     public function _RebootGuest(): Task
     {
-        if (empty($this->id)) {
-            throw new BadCallMethod('Can not call method: '.__CLASS__.'@'.__FUNCTION__.'! ID is not setted!');
-        }
-        $response = $this->api->getClient()->RebootGuest([
-            '_this' => [
-                '_' => $this->id,
-                'type' => self::TYPE,
-            ],
-        ]);
-
-        return $this->api->getTask()->byID($response->returnval->_);
+        return $this->api->getClient()->RebootGuest([
+            '_this' => $this->ref(),
+        ])->returnval->get($this->api);
     }
 
     public function _ShutdownGuest(): Task
     {
-        if (empty($this->id)) {
-            throw new BadCallMethod('Can not call method: '.__CLASS__.'@'.__FUNCTION__.'! ID is not setted!');
-        }
-        $response = $this->api->getClient()->ShutdownGuest([
-            '_this' => [
-                '_' => $this->id,
-                'type' => self::TYPE,
-            ],
-        ]);
-
-        return $this->api->getTask()->byID($response->returnval->_);
+        return $this->api->getClient()->ShutdownGuest([
+            '_this' => $this->ref(),
+        ])->returnval->get($this->api);
     }
 
     public function _UnregisterVM(): Task
     {
-        if (empty($this->id)) {
-            throw new BadCallMethod('Can not call method: '.__CLASS__.'@'.__FUNCTION__.'! ID is not setted!');
-        }
-        $response = $this->api->getClient()->UnregisterVM([
-            '_this' => [
-                '_' => $this->id,
-                'type' => self::TYPE,
-            ],
-        ]);
-
-        return $this->api->getTask()->byID($response->returnval->_);
+        return $this->api->getClient()->UnregisterVM([
+            '_this' => $this->ref(),
+        ])->returnval->get($this->api);
     }
 
     public function _ReconfigVM_Task(VirtualMachineConfigSpec $spec): Task
     {
-        if (empty($this->id)) {
-            throw new BadCallMethod('Can not call method: '.__CLASS__.'@'.__FUNCTION__.'! ID is not setted!');
-        }
-        $response = $this->api->getClient()->ReconfigVM_Task([
-            '_this' => [
-                '_' => $this->id,
-                'type' => self::TYPE,
-            ],
+        return $this->api->getClient()->ReconfigVM_Task([
+            '_this' => $this->ref(),
             'spec' => $spec,
-        ]);
+        ])->returnval->get($this->api);
+    }
 
-        return $this->api->getTask()->byID($response->returnval->_);
+    public function _CloneVM_Task(string $name, ManagedObjectReference $folder, VirtualMachineCloneSpec $spec): Task
+    {
+        return $this->api->getClient()->CloneVM_Task([
+            '_this' => $this->ref(),
+            'name' => $name,
+            'folder' => $folder,
+            'spec' => $spec,
+        ])->returnval->get($this->api);
     }
 }

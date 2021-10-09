@@ -9,4 +9,8 @@ namespace dnj\phpvmomi\DataObjects;
  */
 class HostConfigInfo extends DynamicData
 {
+    /**
+     * @var HostFirewallInfo|null
+     */
+    public $firewall;
 }

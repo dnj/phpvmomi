@@ -11,8 +11,6 @@ use dnj\phpvmomi\DataObjects\PropertyFilterSpec;
  */
 class PropertyFilter
 {
-    use actions\NeedAPITrait;
-
     /**
      * @var bool Flag to indicate if a change to a nested property reports only the nested change or the entire specified property value. If the value is true, a change reports only the nested property. If the value is false, a change reports the enclosing property named in the filter.
      */

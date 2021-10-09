@@ -2,6 +2,8 @@
 
 namespace dnj\phpvmomi\ManagedObjects;
 
+use dnj\phpvmomi\DataObjects\ManagedObjectReference;
+
 /**
  * Represents a storage location for virtual machine files. A storage location can be a VMFS volume, a directory on Network Attached Storage, or a local file system path.
  * A datastore is platform-independent and host-independent. Therefore, datastores do not change when the virtual machines they contain are moved between hosts.
@@ -25,7 +27,7 @@ class Datastore extends ManagedEntity
     use actions\DatastoreTrait;
 
     /**
-     * @var HostDatastoreBrowser
+     * @var ManagedObjectReference
      */
     public $browser;
 
@@ -49,9 +51,6 @@ class Datastore extends ManagedEntity
      */
     public $iormConfiguration;
 
-    /**
-     * @var DatastoreSummary
-     */
     public $summary;
 
     /**

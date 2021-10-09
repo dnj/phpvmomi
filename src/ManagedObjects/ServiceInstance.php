@@ -3,22 +3,17 @@
 namespace dnj\phpvmomi\ManagedObjects;
 
 use dnj\phpvmomi\DataObjects\Capability;
-use dnj\phpvmomi\DataObjects\DynamicData;
 use dnj\phpvmomi\DataObjects\ServiceContent;
-use SoapFault;
 
 /**
  * @see https://vdc-download.vmware.com/vmwb-repository/dcr-public/b50dcbbf-051d-4204-a3e7-e1b618c1e384/538cf2ec-b34f-4bae-a332-3820ef9e7773/vim.ServiceInstance.html#retrieveContent
  */
-class ServiceInstance
+class ServiceInstance extends ManagedEntity
 {
-    use actions\NeedAPITrait;
-
-    public const TYPE = 'ServiceInstance';
+    public ?string $id = 'ServiceInstance';
 
     /**
-     * @var capability  API-wide capabilities
-     * @var dynamicData API-wide capabilities
+     * @var Capability API-wide capabilities
      */
     public $capability;
 
@@ -38,15 +33,8 @@ class ServiceInstance
 
     public function _RetrieveServiceContent(): ServiceContent
     {
-        try {
-            return $this->api->getClient()->RetrieveServiceContent([
-                '_this' => [
-                    '_' => self::TYPE,
-                    'type' => self::TYPE,
-                ],
-            ])->returnval;
-        } catch (SoapFault $e) {
-            throw $e;
-        }
+        return $this->api->getClient()->RetrieveServiceContent([
+            '_this' => $this->ref(),
+        ])->returnval;
     }
 }

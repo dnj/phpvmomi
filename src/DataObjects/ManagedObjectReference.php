@@ -4,10 +4,11 @@ namespace dnj\phpvmomi\DataObjects;
 
 class ManagedObjectReference extends DynamicData
 {
+    use actions\ManagedObjectReferenceTrait;
     /**
      * @var string the specific instance of Managed Object this ManagedObjectReference refers to
      */
-    public $value;
+    public $_;
 
     /**
      * Allowable values are:
@@ -68,6 +69,6 @@ class ManagedObjectReference extends DynamicData
     public function __construct(string $type, string $value)
     {
         $this->type = $type;
-        $this->value = $value;
+        $this->_ = $value;
     }
 }

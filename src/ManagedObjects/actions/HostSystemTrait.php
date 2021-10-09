@@ -2,120 +2,83 @@
 
 namespace dnj\phpvmomi\ManagedObjects\actions;
 
-use dnj\phpvmomi\API;
-use dnj\phpvmomi\DataObjects\HostPortGroup;
-use dnj\phpvmomi\ManagedObjects\HostSystem;
-use SoapFault;
-use SoapVar;
+use dnj\phpvmomi\DataObjects\ObjectSpec;
+use dnj\phpvmomi\DataObjects\PropertyFilterSpec;
+use dnj\phpvmomi\DataObjects\PropertySpec;
+use dnj\phpvmomi\DataObjects\SelectionSpec;
+use dnj\phpvmomi\DataObjects\TraversalSpec;
+use dnj\phpvmomi\Exception;
+use dnj\phpvmomi\ManagedObjects\Datacenter;
+use dnj\phpvmomi\ManagedObjects\ResourcePool;
 
 trait HostSystemTrait
 {
-    public function byID(string $id): HostSystem
+    public function getResourcePool(): ResourcePool
     {
-        $result = $this->api->getPropertyCollector()->_RetrieveProperties([
-            'propSet' => [
-                'type' => 'HostSystem',
-                'all' => true,
-            ],
-            'objectSet' => [
-                'obj' => [
-                    'type' => 'HostSystem',
-                    '_' => $id,
-                ],
-                'skip' => false,
-            ],
-        ]);
+        $propSet = new PropertySpec('ResourcePool');
 
-        return $this->frompropertyCollector($this->api, $result->returnval);
+        $hostWalker = new TraversalSpec('HostSystem', 'parent');
+        $hostWalker->name = 'HostWalker';
+        $hostWalker->selectSet = [new SelectionSpec('ComputeResourceWalker')];
+
+        $computeResourceWalker = new TraversalSpec('ComputeResource', 'resourcePool');
+        $computeResourceWalker->name = 'ComputeResourceWalker';
+
+        $objectSet = new ObjectSpec($this->ref());
+        $objectSet->selectSet = [$hostWalker, $computeResourceWalker];
+        $spec = new PropertyFilterSpec([$objectSet], [$propSet]);
+
+        $objects = $this->api->getPropertyCollector()->retrieveAllProperties([$spec]);
+        if (!$objects) {
+            throw new Exception('Can not happening');
+        }
+
+        return (new ResourcePool($this->api))->fromObjectContent($objects[0]);
     }
 
-    public function getHostListSummary()
+    public function getDatacenter(): Datacenter
     {
-        $response = null;
-        try {
-            $viewManager = $this->api->getViewManager();
-            $containerView = $viewManager->_CreateContainerView();
+        $propSet = new PropertySpec('Datacenter');
 
-            $response = $this->api->getPropertyCollector()->_RetrieveProperties([
-                'propSet' => [
-                    'type' => HostSystem::TYPE,
-                    'all' => false,
-                    'pathSet' => 'summary',
-                ],
-                'objectSet' => [
-                    'obj' => $containerView,
-                    'skip' => true,
-                    'selectSet' => [
-                        new SoapVar(
-                            [
-                                'name' => 'view',
-                                'type' => 'ContainerView',
-                                'path' => 'view',
-                                'skip' => false,
-                            ],
-                            SOAP_ENC_OBJECT,
-                            'TraversalSpec'
-                        ),
-                    ],
-                ],
-            ]);
-        } catch (SoapFault $e) {
-            throw $e;
+        $walker = new TraversalSpec('ManagedEntity', 'parent');
+        $walker->name = 'Walker';
+        $walker->selectSet = [new SelectionSpec('Walker')];
+
+        $objectSet = new ObjectSpec($this->ref());
+        $objectSet->selectSet = [$walker];
+        $spec = new PropertyFilterSpec([$objectSet], [$propSet]);
+
+        $objects = $this->api->getPropertyCollector()->retrieveAllProperties([$spec]);
+        if (!$objects) {
+            throw new Exception('Can not happening');
         }
-        $result = $response->returnval;
 
-        return $result->propSet->val;
+        return (new Datacenter($this->api))->fromObjectContent($objects[0]);
     }
 
     /**
-     * @return HostPortGroup[]
+     * @return static[]
      */
-    public function getHostPortGroups(): array
+    public function list(): array
     {
-        $response = null;
-        try {
-            $viewManager = $this->api->getViewManager();
-            $containerView = $viewManager->_CreateContainerView();
+        $propSet = new PropertySpec($this->type());
 
-            $response = $this->api->getPropertyCollector()->_RetrieveProperties([
-                'propSet' => [
-                    'type' => HostSystem::TYPE,
-                    'all' => false,
-                    'pathSet' => 'config.network.portgroup',
-                ],
-                'objectSet' => [
-                    'obj' => $containerView,
-                    'skip' => true,
-                    'selectSet' => [
-                        new SoapVar(
-                            [
-                                'name' => 'view',
-                                'type' => 'ContainerView',
-                                'path' => 'view',
-                                'skip' => false,
-                            ],
-                            SOAP_ENC_OBJECT,
-                            'TraversalSpec'
-                        ),
-                    ],
-                ],
-            ]);
-        } catch (SoapFault $e) {
-            throw $e;
-        }
-        $result = $response->returnval;
+        $folderWalker = new TraversalSpec('Folder', 'childEntity');
+        $folderWalker->name = 'FolderWalker';
+        $folderWalker->selectSet = [new SelectionSpec('FolderWalker'), new SelectionSpec('DcWalker'), new SelectionSpec('ComputeResourceWalker')];
 
-        return $result->propSet->val->HostPortGroup;
-    }
+        $dcWalker = new TraversalSpec('Datacenter', 'hostFolder');
+        $dcWalker->name = 'DcWalker';
+        $dcWalker->selectSet = [new SelectionSpec('FolderWalker')];
 
-    protected static function fromPropertyCollector(API $api, $response): HostSystem
-    {
-        $obj = new HostSystem($api);
-        $obj->id = $response->obj->_;
-        foreach ($response->propSet as $prop) {
-            $obj->{$prop->name} = $prop->val;
-        }
+        $computeResourceWalker = new TraversalSpec('ComputeResource', 'host');
+        $computeResourceWalker->name = 'ComputeResourceWalker';
 
-        return $obj;
+        $objectSet = new ObjectSpec($this->api->getServiceContent()->rootFolder);
+        $objectSet->selectSet = [$folderWalker, $dcWalker, $computeResourceWalker];
+        $spec = new PropertyFilterSpec([$objectSet], [$propSet]);
+        $objects = $this->api->getPropertyCollector()->retrieveAllProperties([$spec]);
+
+        return array_map(fn ($item) => $this->createNew()->fromObjectContent($item), $objects);
     }
 }

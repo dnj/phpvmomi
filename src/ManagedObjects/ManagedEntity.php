@@ -16,6 +16,7 @@ use dnj\phpvmomi\DataObjects\Event;
 class ManagedEntity extends ExtensibleManagedObject
 {
     use actions\NeedAPITrait;
+    use actions\ManagedEntityTrait;
 
     /**
      * @var bool Whether alarm actions are enabled for this entity. True if enabled; false otherwise.
@@ -39,12 +40,12 @@ class ManagedEntity extends ExtensibleManagedObject
     /**
      * @param array{type: string, _:int} $_this
      */
-    public function _Destroy_Task(array $_this): Task
+    public function _Destroy_Task(): Task
     {
         $response = $this->api->getClient()->Destroy_Task([
-            '_this' => $_this,
+            '_this' => $this->ref(),
         ]);
 
-        return $this->api->getTask()->byID($response->returnval->_);
+        return $response->returnval->get($this->api);
     }
 }

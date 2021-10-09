@@ -2,46 +2,30 @@
 
 namespace dnj\phpvmomi\ManagedObjects;
 
-use SoapVar;
+use dnj\phpvmomi\DataObjects\ManagedObjectReference;
 
 /**
  * @todo implement
  *
  * @see https://vdc-download.vmware.com/vmwb-repository/dcr-public/b50dcbbf-051d-4204-a3e7-e1b618c1e384/538cf2ec-b34f-4bae-a332-3820ef9e7773/vim.view.ViewManager.html
  */
-class ViewManager
+class ViewManager extends ManagedEntity
 {
-    use actions\NeedAPITrait;
+    /**
+     * @var ManagedObjectReference[]|null
+     */
+    public $viewList;
 
     /**
-     * @var ManagedObjectReference
+     * @param string[] $type
      */
-    public $_this;
-
-    /**
-     * @var ManagedEntity
-     */
-    public $container;
-
-    /**
-     * @var string
-     */
-    public $type;
-
-    /**
-     * @var bool
-     */
-    public $recursive;
-
-    public function _CreateContainerView(SoapVar $_this = null, ManagedEntity $container = null, string $type = null, bool $recursive = true)
+    public function _CreateContainerView(ManagedObjectReference $container, array $type, bool $recursive = true): ManagedObjectReference
     {
-        $params = [
-            '_this' => $_this ?? new SoapVar('ViewManager', XSD_STRING, 'ViewManager'),
-            'container' => ($container ? $container::TYPE : null) ?? $this->api->getServiceContent()->rootFolder,
-            'type' => $type ?? HostSystem::TYPE,
+        return $this->api->getClient()->CreateContainerView([
+            '_this' => $this->ref(),
+            'container' => $container,
+            'type' => $type,
             'recursive' => $recursive,
-        ];
-
-        return $this->api->getClient()->CreateContainerView($params)->returnval;
+        ])->returnval;
     }
 }

@@ -8,20 +8,32 @@
             "dnj\\phpvmomi\\": "src"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "dnj\\phpvmomi\\Tests\\": "tests"
+        }
+    },
     "require": {
-        "php": "^7.3|^8.0",
+        "php": "^7.4|^8.0",
         "ext-openssl": "*",
-        "ext-soap": "*"
+        "ext-soap": "*",
+        "ext-curl": "*",
+        "dnj/local-filesystem": "^1.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^0.12.85",
-        "friendsofphp/php-cs-fixer": "^3.1"
+        "friendsofphp/php-cs-fixer": "^3.1",
+        "dnj/tmp-filesystem": "^1.0",
+        "phpunit/phpunit": "^9.5",
+        "symfony/var-dumper": "^5.3"
     },
     "scripts": {
-        "test:types": "./vendor/phpstan/phpstan/phpstan analyse",
+        "test:types": "vendor/bin/phpstan analyse",
+        "test:phpunit": "vendor/bin/phpunit",
         "test:codestyle": "vendor/bin/php-cs-fixer fix -v --dry-run --stop-on-violation --using-cache=no",
         "test": [
             "@test:types",
+            "@test:phpunit",
             "@test:codestyle"
         ]
     }

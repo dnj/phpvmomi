@@ -11,7 +11,7 @@ trait NeedAPITrait
      */
     protected $api;
 
-    public function __construct(API $api)
+    final public function __construct(API $api)
     {
         $this->api = $api;
     }
@@ -24,5 +24,10 @@ trait NeedAPITrait
                 $value->setAPI($api);
             }
         }
+    }
+
+    public function getAPI(): API
+    {
+        return $this->api;
     }
 }

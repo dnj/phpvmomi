@@ -28,41 +28,46 @@ use dnj\phpvmomi\DataObjects\ManagedObjectReference;
  */
 class FileManager extends ManagedEntity
 {
-    use actions\NeedAPITrait;
+    use actions\FileManagerTrait;
 
-    /**
-     * @var string
-     *
-     * @since vSphere API 4.0
-     */
-    public $name;
-
-    /**
-     * @var ManagedObjectReference<Datacenter>
-     *
-     * @since vSphere API 4.0
-     */
-    public $datacenter;
-
-    /**
-     * @var string;
-     *
-     * @since vSphere API 4.0
-     */
-    public $owner;
-
-    public function _DeleteDatastoreFile_Task(string $name, $datacenter = null): Task
+    public function _DeleteDatastoreFile_Task(string $name, ?ManagedObjectReference $datacenter = null): Task
     {
-        $params = [
-            '_this' => $this->api->getServiceContent()->fileManager,
+        return $this
+            ->api
+            ->getClient()
+            ->DeleteDatastoreFile_Task([
+                '_this' => $this->ref(),
+                'name' => $name,
+                'datacenter' => $datacenter,
+            ])
+            ->returnval
+            ->get($this->api);
+    }
+
+    public function _MakeDirectory(string $name, bool $createParentDirectories = false, ?ManagedObjectReference $datacenter = null): void
+    {
+        $this->api->getClient()->MakeDirectory([
+            '_this' => $this->ref(),
             'name' => $name,
-        ];
-        if ($datacenter) {
-            $params['datacenter'] = $datacenter;
-        }
+            'createParentDirectories' => $createParentDirectories,
+            'datacenter' => $datacenter,
+        ]);
+    }
 
-        $response = $this->api->getClient()->DeleteDatastoreFile_Task($params);
-
-        return $this->api->getTask()->byID($response->returnval->_);
+    public function _CopyDatastoreFile_Task(string $sourceName, string $destinationName, ?ManagedObjectReference $sourceDatacenter = null, ?ManagedObjectReference $destinationDatacenter = null, ?bool $force = null): Task
+    {
+        return $this
+            ->api
+            ->getClient()
+            ->CopyDatastoreFile_Task([
+                '_this' => $this->ref(),
+                'sourceName' => $sourceName,
+                'destinationName' => $destinationName,
+                'sourceDatacenter' => $sourceDatacenter,
+                'destinationDatacenter' => $destinationDatacenter,
+                'force' => $force,
+            ])
+            ->returnval
+            ->get($this->api);
     }
 }

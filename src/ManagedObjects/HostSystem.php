@@ -2,14 +2,19 @@
 
 namespace dnj\phpvmomi\ManagedObjects;
 
+use dnj\phpvmomi\DataObjects\AnswerFileStatusResult;
+use dnj\phpvmomi\DataObjects\ComplianceResult;
+use dnj\phpvmomi\DataObjects\HostCapability;
+use dnj\phpvmomi\DataObjects\HostConfigInfo;
+use dnj\phpvmomi\DataObjects\HostListSummary;
+use dnj\phpvmomi\DataObjects\ManagedObjectReference;
+
 /**
  * @see https://vdc-download.vmware.com/vmwb-repository/dcr-public/b50dcbbf-051d-4204-a3e7-e1b618c1e384/538cf2ec-b34f-4bae-a332-3820ef9e7773/vim.HostSystem.html
  */
 class HostSystem extends ManagedEntity
 {
-    use actions\NeedAPITrait;
     use actions\HostSystemTrait;
-    public const TYPE = 'HostSystem';
 
     /**
      * @var AnswerFileStatusResult
@@ -47,12 +52,12 @@ class HostSystem extends ManagedEntity
     public $configManager;
 
     /**
-     * @var Datastore[]
+     * @var ManagedObjectReference[]
      */
     public $datastore;
 
     /**
-     * @var HostDatastoreBrowser
+     * @var ManagedObjectReference
      */
     public $datastoreBrowser;
 
@@ -67,7 +72,7 @@ class HostSystem extends ManagedEntity
     public $licensableResource;
 
     /**
-     * @var Network[]
+     * @var ManagedObjectReference[]
      */
     public $network;
 
@@ -77,7 +82,7 @@ class HostSystem extends ManagedEntity
     public $precheckRemediationResult;
 
     /**
-     * @var ApplyHostProfileConfigurationResult $remediationResult
+     * @var ApplyHostProfileConfigurationResult
      */
     public $remediationResult;
 
@@ -102,7 +107,7 @@ class HostSystem extends ManagedEntity
     public $systemResources;
 
     /**
-     * @var VirtualMachine[]
+     * @var ManagedObjectReference[]
      */
     public $vm;
 }

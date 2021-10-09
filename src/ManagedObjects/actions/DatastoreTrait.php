@@ -2,204 +2,86 @@
 
 namespace dnj\phpvmomi\ManagedObjects\actions;
 
-use dnj\phpvmomi\API;
-use dnj\phpvmomi\DataObjects\DynamicData;
+use dnj\phpvmomi\DataObjects\ObjectSpec;
+use dnj\phpvmomi\DataObjects\PropertyFilterSpec;
+use dnj\phpvmomi\DataObjects\PropertySpec;
+use dnj\phpvmomi\DataObjects\SelectionSpec;
+use dnj\phpvmomi\DataObjects\TraversalSpec;
 use dnj\phpvmomi\Exception;
-use dnj\phpvmomi\ManagedObjects\Custom\File;
 use dnj\phpvmomi\ManagedObjects\Datacenter;
-use dnj\phpvmomi\ManagedObjects\Datastore;
-use SoapVar;
+use dnj\phpvmomi\Utils\Path;
 
 trait DatastoreTrait
 {
-    public $vmfs;
+    protected ?Datacenter $datacenter = null;
 
     /**
-     * @var string
+     * @return static[]
      */
-    public $id;
-
-    public function list()
+    public function list(): array
     {
-        $response = $this->api->getPropertyCollector()->_RetrievePropertiesEx([
-            'propSet' => [
-                'type' => 'Datastore',
-                'all' => true,
-            ],
-            'objectSet' => [
-                'obj' => $this->api->getServiceContent()->rootFolder,
-                'skip' => false,
-                'selectSet' => [
-                    new SoapVar([
-                        'name' => 'FolderTraversalSpec',
-                        'type' => 'Folder',
-                        'path' => 'childEntity',
-                        'skip' => false,
-                        new SoapVar(['name' => 'FolderTraversalSpec'], SOAP_ENC_OBJECT, null, null, 'selectSet'),
-                        new SoapVar(['name' => 'DataCenterVMTraversalSpec'], SOAP_ENC_OBJECT, null, null, 'selectSet'),
-                    ], SOAP_ENC_OBJECT, 'TraversalSpec'),
-                    new soapvar([
-                        'name' => 'DataCenterVMTraversalSpec',
-                        'type' => 'Datacenter',
-                        'path' => 'datastoreFolder',
-                        'skip' => false,
-                        'selectSet' => (object) ['name' => 'FolderTraversalSpec'],
-                    ], SOAP_ENC_OBJECT, 'TraversalSpec'),
-                ],
-            ],
-        ])->returnval;
-        if (!is_array($response)) {
-            $response = [$response];
-        }
-        $datastores = [];
-        foreach ($response as $ds) {
-            $datastores[] = self::fromAPI($this->api, $ds);
-        }
+        $propSet = new PropertySpec('Datastore');
 
-        return $datastores;
-    }
+        $folderWalker = new TraversalSpec('Folder', 'childEntity');
+        $folderWalker->name = 'FolderWalker';
+        $folderWalker->selectSet = [new SelectionSpec('FolderWalker'), new SelectionSpec('dcWalker')];
 
-    public function file(string $path): File
-    {
-        return new File($this->api, $this, $path);
+        $dcWalker = new TraversalSpec('Datacenter', 'datastoreFolder');
+        $dcWalker->name = 'dcWalker';
+        $dcWalker->skip = false;
+        $dcWalker->selectSet = [new SelectionSpec('FolderWalker')];
+
+        $objectSet = new ObjectSpec($this->api->getServiceContent()->rootFolder);
+        $objectSet->selectSet = [$folderWalker, $dcWalker];
+        $spec = new PropertyFilterSpec([$objectSet], [$propSet]);
+        $objects = $this->api->getPropertyCollector()->retrieveAllProperties([$spec]);
+
+        return array_map(fn ($item) => $this->createNew()->fromObjectContent($item), $objects);
     }
 
     public function getDatacenter(): Datacenter
     {
-        $result = $this->api->getPropertyCollector()->_RetrieveProperties([
-            'propSet' => [
-                'type' => 'Datacenter',
-                'all' => true,
-            ],
-            'objectSet' => [
-                'obj' => [
-                    'type' => 'Datastore',
-                    '_' => $this->id,
-                ],
-                'skip' => false,
-                'selectSet' => [
-                    new SoapVar([
-                        'name' => 'FolderTraversalSpec',
-                        'type' => 'ManagedEntity',
-                        'path' => 'parent',
-                        'skip' => false,
-                        new SoapVar([
-                            'name' => 'FolderTraversalSpec',
-                        ], SOAP_ENC_OBJECT, null, null, 'selectSet'),
-                        new SoapVar(['name' => 'DataCenterVMTraversalSpec'], SOAP_ENC_OBJECT, null, null, 'selectSet'),
-                    ], SOAP_ENC_OBJECT, 'TraversalSpec'),
-                    new soapvar([
-                        'name' => 'DataCenterVMTraversalSpec',
-                        'type' => 'Datacenter',
-                        'path' => 'parent',
-                        'skip' => false,
-                        'selectSet' => (object) ['name' => 'FolderTraversalSpec'],
-                    ], SOAP_ENC_OBJECT, 'TraversalSpec'),
-                ],
-            ],
-        ]);
+        if ($this->datacenter) {
+            return $this->datacenter;
+        }
+        $propSet = new PropertySpec('Datacenter');
 
-        return Datacenter::fromPropertyCollector($this->api, $result->returnval);
+        $parentWalker = new TraversalSpec('ManagedEntity', 'parent');
+        $parentWalker->name = 'ParentWalker';
+        $parentWalker->skip = false;
+        $parentWalker->selectSet = [new SelectionSpec('ParentWalker')];
+
+        $objectSet = new ObjectSpec($this->ref());
+        $objectSet->selectSet = [$parentWalker];
+
+        $spec = new PropertyFilterSpec([$objectSet], [$propSet]);
+        $objects = $this->api->getPropertyCollector()->retrieveAllProperties([$spec]);
+
+        if (!$objects) {
+            throw new Exception('Cannot happening');
+        }
+        $this->datacenter = (new Datacenter($this->api))->fromObjectContent($objects[0]);
+
+        return $this->datacenter;
     }
 
-    public function browse(string $path)
+    public function getDatastorePath(string $path): string
     {
-        $task = $this->api->getClient()->SearchDatastore_Task([
-            '_this' => $this->browser,
-            'datastorePath' => "[$this->name] $path",
-            'searchSpec' => [
-                'details' => [
-                    'fileType' => true,
-                    'fileSize' => true,
-                    'modification' => true,
-                    'fileOwner' => true,
-                ],
-                'sortFoldersFirst' => true,
-            ],
-        ])->returnval;
-        $task = $this->api->getTask()->byID($task->_);
-        if (!$task->waitFor(60)) {
-            throw new Exception('timeout task');
-        }
-        if ($task->error) {
-            throw new Exception($task->error->localizedMessage);
-        }
-        if (!isset($task->result->file)) {
-            return [];
-        }
-        if (!is_array($task->result->file)) {
-            return [$task->result->file];
-        }
-
-        return $task->result->file;
+        return (new Path($this->name, $path))->toDSPath();
     }
 
-    public function mkdir(string $path): void
+    public function getPath(string $path): Path
     {
-        $this->api->getClient()->MakeDirectory([
-            '_this' => $this->api->getServiceContent()->fileManager,
-            'name' => "[$this->name] $path",
-        ]);
+        return new Path($this->name, $path, $this->getDatacenter()->name);
     }
 
-    public function __toString()
+    public function getFileURL(string $path): string
     {
-        return $this->vmfs->uuid;
+        return $this->getPath($path)->toURL($this->api);
     }
 
-    public static function fromAPI(API $api, DynamicData $response, ?Datastore $datastore = null): Datastore
+    public function makeDirectory(string $path, bool $createParentDirectories = false): void
     {
-        if (null == $datastore) {
-            $datastore = new self($api);
-        }
-
-        $info = self::getPropertyByName('info', $response->propSet);
-
-        $datastore->id = $response->obj->_;
-        $datastore->browser = self::getPropertyByName('browser', $response->propSet);
-        $datastore->capability = self::getPropertyByName('capability', $response->propSet);
-        $datastore->host = self::getPropertyByName('host', $response->propSet);
-        $datastore->info = $info;
-        $datastore->name = $info->name;
-        $datastore->iormConfiguration = self::getPropertyByName('iormConfiguration', $response->propSet);
-        $datastore->summary = self::getPropertyByName('summary', $response->propSet);
-        $datastore->configStatus = self::getPropertyByName('configStatus', $response->propSet);
-        $datastore->vm = self::getPropertyByName('vm', $response->propSet);
-        $datastore->vmfs = self::array2Object([
-            'type' => $info->vmfs->type,
-            'name' => $info->vmfs->name,
-            'capacity' => $info->vmfs->capacity,
-            'version' => $info->vmfs->version,
-            'uuid' => $info->vmfs->uuid,
-            'ssd' => $info->vmfs->ssd,
-        ]);
-
-        $datastore->setAPI($api);
-
-        return $datastore;
-    }
-
-    public static function getPropertyByName(string $name, array $propset)
-    {
-        foreach ($propset as $prop) {
-            if ($prop->name == $name) {
-                return $prop->val;
-            }
-        }
-
-        return null;
-    }
-
-    public static function array2Object(array $array): DynamicData
-    {
-        $new = new DynamicData();
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                $value = self::array2Object($value);
-            }
-            $new->$key = $value;
-        }
-
-        return $new;
+        $this->api->getFileManager()->_MakeDirectory("[{$this->info->name}] $path", $createParentDirectories);
     }
 }

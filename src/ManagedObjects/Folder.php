@@ -2,6 +2,9 @@
 
 namespace dnj\phpvmomi\ManagedObjects;
 
+use dnj\phpvmomi\DataObjects\ManagedObjectReference;
+use dnj\phpvmomi\DataObjects\VirtualMachineConfigSpec;
+
 /**
  * @todo complete methods
  *
@@ -9,10 +12,6 @@ namespace dnj\phpvmomi\ManagedObjects;
  */
 class Folder extends ManagedEntity
 {
-    use actions\NeedAPITrait;
-
-    public const TYPE = 'Folder';
-
     /**
      * @var ManagedEntity[] An array of managed object references. Each entry is a reference to a child entity.
      */
@@ -30,21 +29,33 @@ class Folder extends ManagedEntity
      */
     public $namespace;
 
-    public function _CreateVM_Task($config, $pool, $host = null): Task
+    public function _CreateVM_Task(VirtualMachineConfigSpec $config, ManagedObjectReference $pool, ?ManagedObjectReference $host = null): Task
     {
-        $params = [
-            '_this' => [
-                'type' => self::TYPE,
-                '_' => 'ha-folder-vm',
-            ],
-            'config' => $config,
-            'pool' => $pool,
-        ];
-        if ($host) {
-            $params['host'] = $host;
-        }
-        $response = $this->api->getClient()->CreateVM_Task($params);
+        return $this->api
+            ->getClient()
+            ->CreateVM_Task([
+                '_this' => $this->ref(),
+                'config' => $config,
+                'pool' => $pool,
+                'host' => $host,
+            ])
+            ->returnval
+            ->get($this->api);
+    }
 
-        return $this->api->getTask()->byID($response->returnval->_);
+    public function _RegisterVM_Task(string $path, bool $asTemplate, ?string $name = null, ?ManagedObjectReference $pool = null, ?ManagedObjectReference $host = null): Task
+    {
+        return $this->api
+            ->getClient()
+            ->RegisterVM_Task([
+                '_this' => $this->ref(),
+                'path' => $path,
+                'asTemplate' => $asTemplate,
+                'name' => $name,
+                'pool' => $pool,
+                'host' => $host,
+            ])
+            ->returnval
+            ->get($this->api);
     }
 }
