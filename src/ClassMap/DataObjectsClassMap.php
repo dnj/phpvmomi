@@ -101,6 +101,7 @@ class DataObjectsClassMap
         'VirtualDisk' => DataObjects\VirtualDisk::class,
         'VirtualDiskSpec' => DataObjects\VirtualDiskSpec::class,
         'VirtualE1000' => DataObjects\VirtualE1000::class,
+        'VirtualE1000e' => DataObjects\VirtualE1000e::class,
         'VirtualEthernetCardNetworkBackingInfo' => DataObjects\VirtualEthernetCardNetworkBackingInfo::class,
         'VirtualEthernetCard' => DataObjects\VirtualEthernetCard::class,
         'VirtualEthernetCardResourceAllocation' => DataObjects\VirtualEthernetCardResourceAllocation::class,
